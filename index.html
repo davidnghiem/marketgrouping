@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sportsbook Market Organizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #0f1419;
+            color: #e7e9ea;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a1f26 0%, #252d38 100%);
+            padding: 20px 40px;
+            border-bottom: 1px solid #2f3942;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #1d9bf0;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1a8cd8;
+        }
+
+        .btn-secondary {
+            background: #2f3942;
+            color: #e7e9ea;
+        }
+
+        .btn-secondary:hover {
+            background: #3a4550;
+        }
+
+        .btn-success {
+            background: #00ba7c;
+            color: white;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 73px);
+        }
+
+        .sidebar {
+            width: 160px;
+            background: #16181c;
+            border-right: 1px solid #2f3942;
+            padding: 12px;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            font-size: 11px;
+            color: #71767b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .sport-list {
+            list-style: none;
+        }
+
+        .sport-item {
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-bottom: 2px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .sport-item:hover {
+            background: #1d1f23;
+        }
+
+        .sport-item.active {
+            background: #1d9bf0;
+            color: white;
+        }
+
+        .sport-icon {
+            font-size: 16px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            background: #16181c;
+            padding: 4px;
+            border-radius: 10px;
+            width: fit-content;
+        }
+
+        .view-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: #71767b;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            background: #2f3942;
+            color: #e7e9ea;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: #16181c;
+            padding: 16px 24px;
+            border-radius: 12px;
+            border: 1px solid #2f3942;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1d9bf0;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #71767b;
+            margin-top: 4px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            color: #71767b;
+        }
+
+        select, input[type="text"] {
+            background: #16181c;
+            border: 1px solid #2f3942;
+            color: #e7e9ea;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: #1d9bf0;
+        }
+
+        .categories-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .category-card {
+            background: #16181c;
+            border-radius: 12px;
+            border: 1px solid #2f3942;
+            overflow: hidden;
+        }
+
+        .category-header {
+            padding: 16px 20px;
+            background: #1d1f23;
+            border-bottom: 1px solid #2f3942;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-count {
+            background: #2f3942;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #71767b;
+        }
+
+        .category-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: #71767b;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: #2f3942;
+            color: #e7e9ea;
+        }
+
+        .market-list {
+            padding: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .market-item {
+            padding: 10px 12px;
+            border-radius: 8px;
+            margin-bottom: 4px;
+            background: #1d1f23;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: grab;
+            transition: all 0.2s;
+        }
+
+        .market-item:hover {
+            background: #252d38;
+        }
+
+        .market-item.dragging {
+            opacity: 0.5;
+            transform: scale(1.02);
+        }
+
+        .market-item.inactive {
+            opacity: 0.5;
+        }
+
+        .market-name {
+            font-size: 14px;
+            flex: 1;
+        }
+
+        .market-badges {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .badge-active {
+            background: rgba(0, 186, 124, 0.2);
+            color: #00ba7c;
+        }
+
+        .badge-inactive {
+            background: rgba(244, 33, 46, 0.2);
+            color: #f4212e;
+        }
+
+        .badge-subcategory {
+            background: rgba(29, 155, 240, 0.2);
+            color: #1d9bf0;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 36px;
+            height: 20px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #2f3942;
+            transition: 0.3s;
+            border-radius: 20px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: #00ba7c;
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(16px);
+        }
+
+        .table-view {
+            background: #16181c;
+            border-radius: 12px;
+            border: 1px solid #2f3942;
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 50px minmax(250px, 1fr) 150px 150px 150px 150px 80px;
+            gap: 16px;
+            padding: 12px 16px;
+            background: #1d1f23;
+            border-bottom: 1px solid #2f3942;
+            font-size: 12px;
+            color: #71767b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            align-items: center;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 50px minmax(250px, 1fr) 150px 150px 150px 150px 80px;
+            gap: 16px;
+            padding: 16px;
+            border-bottom: 1px solid #2f3942;
+            align-items: center;
+            min-height: 60px;
+            transition: background 0.2s;
+        }
+
+        .table-row > div {
+            display: flex;
+            align-items: center;
+        }
+
+        .table-row:hover {
+            background: #1d1f23;
+        }
+
+        .table-row:last-child {
+            border-bottom: none;
+        }
+
+        .row-number {
+            color: #71767b;
+            font-size: 12px;
+        }
+
+        .editable-cell {
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .editable-cell:hover {
+            background: #2f3942;
+        }
+
+        .edit-input {
+            background: #0f1419;
+            border: 1px solid #1d9bf0;
+            color: #e7e9ea;
+            padding: 4px 8px;
+            border-radius: 4px;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .comparison-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .comparison-panel {
+            background: #16181c;
+            border-radius: 12px;
+            border: 1px solid #2f3942;
+            overflow: hidden;
+        }
+
+        .comparison-header {
+            padding: 16px 20px;
+            background: #1d1f23;
+            border-bottom: 1px solid #2f3942;
+            font-weight: 600;
+        }
+
+        .comparison-header.current {
+            border-left: 3px solid #f4212e;
+        }
+
+        .comparison-header.suggested {
+            border-left: 3px solid #00ba7c;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: #16181c;
+            border-radius: 16px;
+            border: 1px solid #2f3942;
+            width: 500px;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #2f3942;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: #71767b;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #e7e9ea;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #2f3942;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-box input {
+            padding-left: 36px;
+            width: 250px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #71767b;
+        }
+
+        .drag-over {
+            border: 2px dashed #1d9bf0 !important;
+            background: rgba(29, 155, 240, 0.1) !important;
+        }
+
+        .empty-category-message {
+            padding: 20px;
+            text-align: center;
+            color: #71767b;
+            font-size: 13px;
+            font-style: italic;
+            border: 1px dashed #2f3942;
+            border-radius: 8px;
+            margin: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #71767b;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        /* Inline Category Dropdown */
+        .category-dropdown {
+            position: absolute;
+            background: #1d1f23;
+            border: 1px solid #2f3942;
+            border-radius: 8px;
+            min-width: 200px;
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .category-dropdown-item {
+            padding: 10px 14px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #e7e9ea;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-dropdown-item:hover {
+            background: #2f3942;
+        }
+
+        .category-dropdown-item.selected {
+            background: rgba(29, 155, 240, 0.2);
+            color: #1d9bf0;
+        }
+
+        .category-dropdown-item.add-new {
+            border-top: 1px solid #2f3942;
+            color: #1d9bf0;
+        }
+
+        .category-dropdown-item.add-new:hover {
+            background: rgba(29, 155, 240, 0.1);
+        }
+
+        .category-dropdown-input {
+            padding: 10px 14px;
+            border-top: 1px solid #2f3942;
+        }
+
+        .category-dropdown-input input {
+            width: 100%;
+            background: #0f1419;
+            border: 1px solid #2f3942;
+            color: #e7e9ea;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .category-dropdown-input input:focus {
+            outline: none;
+            border-color: #1d9bf0;
+        }
+
+        .category-dropdown-input-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .category-dropdown-input-actions button {
+            flex: 1;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .category-dropdown-input-actions .save-btn {
+            background: #1d9bf0;
+            color: white;
+        }
+
+        .category-dropdown-input-actions .cancel-btn {
+            background: #2f3942;
+            color: #e7e9ea;
+        }
+
+        .dropdown-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 999;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .categories-container {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-view {
+                grid-template-columns: 1fr;
+            }
+
+            .table-header, .table-row {
+                grid-template-columns: 40px 1fr 100px 80px;
+            }
+
+            .table-header > *:nth-child(4),
+            .table-header > *:nth-child(5),
+            .table-header > *:nth-child(6),
+            .table-row > *:nth-child(4),
+            .table-row > *:nth-child(5),
+            .table-row > *:nth-child(6) {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🎰 Sportsbook Market Organizer</h1>
+        <div class="header-actions">
+            <button class="btn btn-secondary" onclick="importData()">📁 Import</button>
+            <button class="btn btn-primary" onclick="exportData()">📤 Export JSON</button>
+            <button class="btn btn-success" onclick="exportCSV()">📊 Export CSV</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h3>Sports</h3>
+            <ul class="sport-list" id="sportList">
+                <!-- Sports will be populated here -->
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <div class="view-toggle">
+                <button class="view-btn active" data-view="cards" onclick="setView('cards')">📦 Cards</button>
+                <button class="view-btn" data-view="table" onclick="setView('table')">📋 Table</button>
+                <button class="view-btn" data-view="comparison" onclick="setView('comparison')">⚖️ Compare</button>
+            </div>
+
+            <div class="stats-bar" id="statsBar">
+                <!-- Stats will be populated here -->
+            </div>
+
+            <div class="filters">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="searchInput" placeholder="Search markets..." oninput="filterMarkets()">
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">Status:</span>
+                    <select id="statusFilter" onchange="filterMarkets()">
+                        <option value="all">All</option>
+                        <option value="active">Active Only</option>
+                        <option value="inactive">Inactive Only</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <span class="filter-label">Category:</span>
+                    <select id="categoryFilter" onchange="filterMarkets()">
+                        <option value="all">All Categories</option>
+                    </select>
+                </div>
+                <button class="btn btn-secondary" onclick="openAddCategoryModal()">+ Add Category</button>
+            </div>
+
+            <div id="contentArea">
+                <!-- Content will be rendered here based on view -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Category Modal -->
+    <div class="modal-overlay" id="categoryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Add Category</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Category Name</label>
+                    <input type="text" id="categoryName" placeholder="e.g., Player Props">
+                </div>
+                <div class="form-group">
+                    <label>Parent Category (optional)</label>
+                    <select id="parentCategory">
+                        <option value="">None (Top-level category)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveCategory()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Market Modal -->
+    <div class="modal-overlay" id="marketModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Edit Market</h3>
+                <button class="modal-close" onclick="closeMarketModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Market Name</label>
+                    <input type="text" id="marketName" readonly style="opacity: 0.7">
+                </div>
+                <div class="form-group">
+                    <label>Suggested Category</label>
+                    <select id="marketCategory">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Suggested Subcategory</label>
+                    <select id="marketSubcategory">
+                        <option value="">None</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Active Status</label>
+                    <select id="marketActive">
+                        <option value="true">Active</option>
+                        <option value="false">Inactive</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeMarketModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="saveMarket()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
