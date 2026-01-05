@@ -1441,10 +1441,44 @@ function exportData() {
 
 function exportCSV() {
     const sport = sportsData[currentSport];
-    let csv = 'Market Name,Sportsradar Type,Suggested Category,Suggested Subcategory,Active\n';
+    let csv = '';
+
+    // === MARKETS SECTION ===
+    csv += '=== MARKETS ===\n';
+    csv += 'Market Name,Display Name,Sportsradar Type,Suggested Category,Suggested Subcategory,Active\n';
 
     sport.markets.forEach(market => {
-        csv += `"${market.specificMarket}","${market.sportsradarType}","${market.suggestedCategory}","${market.suggestedSubcategory}","${market.active}"\n`;
+        const displayName = market.displayName || '';
+        csv += `"${market.specificMarket}","${displayName}","${market.sportsradarType}","${market.suggestedCategory}","${market.suggestedSubcategory || ''}","${market.active}"\n`;
+    });
+
+    // === CATEGORIES SECTION ===
+    csv += '\n=== CATEGORIES ===\n';
+    csv += 'Order,Category Name,Subcategories\n';
+
+    // Sort categories by order
+    const sortedCategories = [...sport.suggestedCategories].sort((a, b) => {
+        const orderA = a.order ?? 999;
+        const orderB = b.order ?? 999;
+        return orderA - orderB;
+    });
+
+    sortedCategories.forEach((cat, index) => {
+        const subcats = cat.subcategories.join('; ');
+        csv += `${index + 1},"${cat.name}","${subcats}"\n`;
+    });
+
+    // === MARKET ORDER BY CATEGORY SECTION ===
+    csv += '\n=== MARKET ORDER BY CATEGORY ===\n';
+    csv += 'Category,Order,Market Name,Display Name\n';
+
+    sortedCategories.forEach(cat => {
+        // Get markets in this category, preserving their array order
+        const categoryMarkets = sport.markets.filter(m => m.suggestedCategory === cat.name);
+        categoryMarkets.forEach((market, index) => {
+            const displayName = market.displayName || '';
+            csv += `"${cat.name}",${index + 1},"${market.specificMarket}","${displayName}"\n`;
+        });
     });
 
     const blob = new Blob([csv], { type: 'text/csv' });
