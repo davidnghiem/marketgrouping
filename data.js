@@ -732,10 +732,9 @@ const competitorData = {
             categories: [
                 { name: "Popular", subcategories: [] },
                 { name: "Match Lines", subcategories: [] },
-                { name: "Set Betting", subcategories: ["Correct Score", "Set Handicap"] },
-                { name: "Game Props", subcategories: ["Total Games", "Game Handicap"] },
-                { name: "Set Props", subcategories: ["1st Set", "2nd Set"] },
-                { name: "Player Props", subcategories: ["Aces", "Double Faults"] }
+                { name: "Sets", subcategories: [] },
+                { name: "Tie Break", subcategories: [] },
+                { name: "Players", subcategories: [] }
             ]
         },
         baseball: {
