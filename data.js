@@ -745,14 +745,7 @@ const competitorData = {
             ]
         },
         baseball: {
-            categories: [
-                { name: "Popular", subcategories: [] },
-                { name: "Game Lines", subcategories: [] },
-                { name: "Run Lines", subcategories: ["Total Runs", "Team Runs", "Innings"] },
-                { name: "Player Props", subcategories: ["Batter Props", "Pitcher Props"] },
-                { name: "Inning Props", subcategories: ["1st Inning", "First 5 Innings"] },
-                { name: "Game Props", subcategories: ["Home Runs", "Hits", "Errors"] }
-            ]
+            categories: []
         }
     }
 };
