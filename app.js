@@ -247,7 +247,7 @@ function renderCardsView(container) {
         <div class="cards-header">
             <div class="view-info">
                 <span class="info-icon">ℹ️</span>
-                <span>Showing <strong>${isSuggested ? 'Suggested' : 'Current'} Categories</strong>${isSuggested ? ' — drag markets between categories to reorganize' : ''}</span>
+                <span>Showing <strong>${isSuggested ? 'Suggested' : 'Current'} Categories</strong>${isSuggested ? ' — drag markets to reorder or move between categories' : ''}</span>
             </div>
             <div class="group-toggle">
                 <button class="group-btn ${isSuggested ? 'active' : ''}" onclick="setCardsGroupBy('suggested')">Suggested</button>
@@ -281,19 +281,23 @@ function renderCardsView(container) {
                 </div>
             `;
         } else {
-            markets.forEach(market => {
+            markets.forEach((market, index) => {
                 const subcategory = isSuggested ? market.suggestedSubcategory : '';
+                const needsReview = market.needsReview || false;
                 html += `
                     <div class="market-item ${market.active ? '' : 'inactive'} ${!isSuggested ? 'readonly' : ''}"
                          ${isSuggested ? 'draggable="true"' : ''}
                          data-id="${market.id}"
-                         ${isSuggested ? `ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)" onclick="openMarketModal('${market.id}')"` : ''}>
+                         data-category="${category}"
+                         data-index="${index}"
+                         ${isSuggested ? `ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)" ondragover="handleItemDragOver(event)" ondragleave="handleItemDragLeave(event)" ondrop="handleItemDrop(event)" onclick="openMarketModal('${market.id}')"` : ''}>
                         <span class="market-name">${market.specificMarket}</span>
                         <div class="market-badges">
                             ${subcategory ? `<span class="badge badge-subcategory">${subcategory}</span>` : ''}
                             <span class="badge ${market.active ? 'badge-active' : 'badge-inactive'}">
                                 ${market.active ? 'Active' : 'Inactive'}
                             </span>
+                            <button class="review-btn ${needsReview ? 'flagged' : ''}" onclick="toggleNeedsReview('${market.id}', event)" title="Flag for review">?</button>
                         </div>
                     </div>
                 `;
@@ -323,10 +327,12 @@ function renderTableView(container) {
                     <div>Subcategory</div>
                     <div>Current Category</div>
                     <div>Active</div>
+                    <div>Review</div>
                 </div>
     `;
 
     filteredMarkets.forEach((market, index) => {
+        const needsReview = market.needsReview || false;
         html += `
             <div class="table-row" data-id="${market.id}">
                 <div class="row-number">${index + 1}</div>
@@ -340,6 +346,11 @@ function renderTableView(container) {
                         <input type="checkbox" ${market.active ? 'checked' : ''} onchange="toggleMarketActive('${market.id}')">
                         <span class="toggle-slider"></span>
                     </label>
+                </div>
+                <div>
+                    <button class="review-btn ${needsReview ? 'flagged' : ''}" onclick="toggleNeedsReview('${market.id}', event)" title="Flag for review">
+                        ?
+                    </button>
                 </div>
             </div>
         `;
@@ -621,6 +632,90 @@ function handleDrop(event, category) {
     }
 }
 
+// Handle drag over individual market items for reordering
+function handleItemDragOver(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const targetItem = event.currentTarget;
+    const draggingId = event.dataTransfer.getData('text/plain') || document.querySelector('.dragging')?.dataset.id;
+
+    // Don't show indicator on the item being dragged
+    if (targetItem.dataset.id === draggingId) return;
+
+    // Determine if we're in the top or bottom half of the target
+    const rect = targetItem.getBoundingClientRect();
+    const midpoint = rect.top + rect.height / 2;
+
+    // Remove existing indicators
+    document.querySelectorAll('.drop-above, .drop-below').forEach(el => {
+        el.classList.remove('drop-above', 'drop-below');
+    });
+
+    if (event.clientY < midpoint) {
+        targetItem.classList.add('drop-above');
+    } else {
+        targetItem.classList.add('drop-below');
+    }
+}
+
+function handleItemDragLeave(event) {
+    event.currentTarget.classList.remove('drop-above', 'drop-below');
+}
+
+function handleItemDrop(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    const targetItem = event.currentTarget;
+    const draggedId = event.dataTransfer.getData('text/plain');
+    const targetId = targetItem.dataset.id;
+    const targetCategory = targetItem.dataset.category;
+
+    // Remove visual indicators
+    document.querySelectorAll('.drop-above, .drop-below').forEach(el => {
+        el.classList.remove('drop-above', 'drop-below');
+    });
+    document.querySelectorAll('.drag-over').forEach(el => {
+        el.classList.remove('drag-over');
+    });
+
+    if (draggedId === targetId) return;
+
+    const sport = sportsData[currentSport];
+    const draggedMarket = sport.markets.find(m => m.id === draggedId);
+
+    if (!draggedMarket) return;
+
+    // Determine drop position (above or below target)
+    const rect = targetItem.getBoundingClientRect();
+    const dropBelow = event.clientY > rect.top + rect.height / 2;
+
+    // Update the dragged market's category if moving to a different category
+    draggedMarket.suggestedCategory = targetCategory;
+
+    // Get all markets in the target category (sorted by current order)
+    const categoryMarkets = sport.markets.filter(m => m.suggestedCategory === targetCategory);
+
+    // Find positions
+    const draggedIndex = sport.markets.indexOf(draggedMarket);
+    const targetMarket = sport.markets.find(m => m.id === targetId);
+    const targetIndex = sport.markets.indexOf(targetMarket);
+
+    // Remove dragged market from array
+    sport.markets.splice(draggedIndex, 1);
+
+    // Find new target index (it may have shifted after removal)
+    const newTargetIndex = sport.markets.indexOf(targetMarket);
+
+    // Insert at new position
+    const insertIndex = dropBelow ? newTargetIndex + 1 : newTargetIndex;
+    sport.markets.splice(insertIndex, 0, draggedMarket);
+
+    renderContent();
+    updateStats();
+}
+
 // Toggle market active status
 function toggleMarketActive(marketId) {
     const market = getMarketById(marketId);
@@ -628,6 +723,133 @@ function toggleMarketActive(marketId) {
         market.active = !market.active;
         updateStats();
         // Don't re-render to avoid losing scroll position
+    }
+}
+
+// Toggle needs review flag
+function toggleNeedsReview(marketId, event) {
+    if (event) event.stopPropagation();
+    const market = getMarketById(marketId);
+    if (market) {
+        market.needsReview = !market.needsReview;
+        updateReviewCount();
+        renderContent();
+    }
+}
+
+// Get count of markets needing review across all sports
+function getReviewCount() {
+    let count = 0;
+    Object.values(sportsData).forEach(sport => {
+        count += sport.markets.filter(m => m.needsReview).length;
+    });
+    return count;
+}
+
+// Update review count badge
+function updateReviewCount() {
+    const countEl = document.getElementById('reviewCount');
+    if (countEl) {
+        const count = getReviewCount();
+        countEl.textContent = `(${count})`;
+        countEl.style.display = count > 0 ? 'inline' : 'none';
+    }
+}
+
+// Show review list modal
+function showReviewList() {
+    const content = document.getElementById('reviewListContent');
+    let html = '';
+
+    // Collect all markets needing review across all sports
+    const reviewMarkets = [];
+    Object.entries(sportsData).forEach(([sportKey, sport]) => {
+        sport.markets.forEach(market => {
+            if (market.needsReview) {
+                reviewMarkets.push({
+                    ...market,
+                    sportKey,
+                    sportName: sport.name
+                });
+            }
+        });
+    });
+
+    if (reviewMarkets.length === 0) {
+        html = `
+            <div class="empty-state" style="padding: 40px; text-align: center; color: var(--color-text-muted);">
+                <div style="font-size: 48px; margin-bottom: 16px;">✓</div>
+                <h3 style="color: var(--color-text); margin-bottom: 8px;">No markets to review</h3>
+                <p>Click the ? button on any market to flag it for review</p>
+            </div>
+        `;
+    } else {
+        html = `<div class="review-list">`;
+        reviewMarkets.forEach(market => {
+            html += `
+                <div class="review-item">
+                    <div class="review-item-info">
+                        <div class="review-item-sport">${market.sportName}</div>
+                        <div class="review-item-name">${market.specificMarket}</div>
+                        <div class="review-item-category">
+                            ${market.suggestedCategory || 'Uncategorized'}
+                            ${market.suggestedSubcategory ? ` → ${market.suggestedSubcategory}` : ''}
+                        </div>
+                    </div>
+                    <div class="review-item-actions">
+                        <button class="btn btn-secondary" onclick="goToMarket('${market.sportKey}', '${market.id}')">View</button>
+                        <button class="review-btn flagged" onclick="unflagFromReviewList('${market.sportKey}', '${market.id}')" title="Remove flag">?</button>
+                    </div>
+                </div>
+            `;
+        });
+        html += `</div>`;
+    }
+
+    content.innerHTML = html;
+    document.getElementById('reviewModal').classList.add('active');
+}
+
+// Close review modal
+function closeReviewModal() {
+    document.getElementById('reviewModal').classList.remove('active');
+}
+
+// Navigate to a specific market from review list
+function goToMarket(sportKey, marketId) {
+    // Change sport if needed
+    if (currentSport !== sportKey) {
+        currentSport = sportKey;
+        document.querySelectorAll('.sport-item').forEach((item, index) => {
+            const key = Object.keys(sportsData)[index];
+            item.classList.toggle('active', key === sportKey);
+        });
+        updateStats();
+        updateCategoryFilter();
+    }
+
+    closeReviewModal();
+    setView('table');
+
+    // Scroll to market after render
+    setTimeout(() => {
+        const row = document.querySelector(`[data-id="${marketId}"]`);
+        if (row) {
+            row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            row.style.animation = 'highlight 2s';
+        }
+    }, 100);
+}
+
+// Unflag market from review list
+function unflagFromReviewList(sportKey, marketId) {
+    const sport = sportsData[sportKey];
+    const market = sport.markets.find(m => m.id === marketId);
+    if (market) {
+        market.needsReview = false;
+        updateReviewCount();
+        showReviewList(); // Refresh the list
+        renderContent(); // Update main view
     }
 }
 

@@ -135,6 +135,17 @@
             transform: translateY(-1px);
         }
 
+        .btn-review {
+            background: transparent;
+            color: #f59e0b;
+            border: 1px solid #f59e0b;
+        }
+
+        .btn-review:hover {
+            background: #f59e0b;
+            color: #000;
+        }
+
         .container {
             display: flex;
             height: calc(100vh - 73px);
@@ -513,7 +524,7 @@
 
         .market-badges {
             display: flex;
-            gap: 6px;
+            gap: 10px;
             align-items: center;
         }
 
@@ -583,6 +594,84 @@
             transform: translateX(16px);
         }
 
+        .review-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1px solid var(--color-border);
+            background: transparent;
+            color: var(--color-text-muted);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all var(--transition-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .review-btn:hover {
+            border-color: #f59e0b;
+            color: #f59e0b;
+        }
+
+        .review-btn.flagged {
+            background: #f59e0b;
+            border-color: #f59e0b;
+            color: #000;
+        }
+
+        .review-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .review-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--color-bg-elevated);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+        }
+
+        .review-item-info {
+            flex: 1;
+        }
+
+        .review-item-sport {
+            font-size: 11px;
+            color: var(--color-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .review-item-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-text);
+            margin-bottom: 4px;
+        }
+
+        .review-item-category {
+            font-size: 12px;
+            color: var(--color-text-muted);
+        }
+
+        .review-item-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        @keyframes highlight {
+            0% { background: rgba(245, 158, 11, 0.3); }
+            100% { background: transparent; }
+        }
+
         .table-view {
             background: #16181c;
             border-radius: 12px;
@@ -596,7 +685,7 @@
 
         .table-header {
             display: grid;
-            grid-template-columns: 50px minmax(250px, 1fr) 150px 150px 150px 150px 80px;
+            grid-template-columns: 50px minmax(250px, 1fr) 150px 150px 150px 150px 80px 60px;
             gap: 16px;
             padding: 12px 16px;
             background: #1d1f23;
@@ -610,7 +699,7 @@
 
         .table-row {
             display: grid;
-            grid-template-columns: 50px minmax(250px, 1fr) 150px 150px 150px 150px 80px;
+            grid-template-columns: 50px minmax(250px, 1fr) 150px 150px 150px 150px 80px 60px;
             gap: 16px;
             padding: 16px;
             border-bottom: 1px solid #2f3942;
@@ -853,6 +942,16 @@
             background: rgba(29, 155, 240, 0.1) !important;
         }
 
+        .market-item.drop-above {
+            border-top: 2px solid #1d9bf0 !important;
+            margin-top: -1px;
+        }
+
+        .market-item.drop-below {
+            border-bottom: 2px solid #1d9bf0 !important;
+            margin-bottom: -1px;
+        }
+
         .empty-category-message {
             padding: 20px;
             text-align: center;
@@ -1022,6 +1121,7 @@
                     <button class="view-btn" data-view="comparison" onclick="setView('comparison')">Compare</button>
                 </div>
                 <div class="main-actions">
+                    <button class="btn btn-review" onclick="showReviewList()">Review List <span id="reviewCount" style="display:none">(0)</span></button>
                     <button class="btn btn-secondary" onclick="importData()">Import</button>
                     <button class="btn btn-primary" onclick="exportData()">Export JSON</button>
                     <button class="btn btn-success" onclick="exportCSV()">Export CSV</button>
@@ -1128,6 +1228,22 @@
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="closeMarketModal()">Cancel</button>
                 <button class="btn btn-primary" onclick="saveMarket()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review List Modal -->
+    <div class="modal-overlay" id="reviewModal">
+        <div class="modal" style="width: 700px; max-height: 85vh;">
+            <div class="modal-header">
+                <h3 class="modal-title">Markets Needing Review</h3>
+                <button class="modal-close" onclick="closeReviewModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="reviewListContent">
+                <!-- Review list will be populated here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeReviewModal()">Close</button>
             </div>
         </div>
     </div>

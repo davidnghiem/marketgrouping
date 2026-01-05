@@ -59,7 +59,7 @@ const sportsData = {
             { id: "fb_32", specificMarket: "Will There Be Overtime", sportsradarType: "Specials", active: true, suggestedCategory: "Game Props", suggestedSubcategory: "" },
             { id: "fb_33", specificMarket: "Odd/Even", sportsradarType: "Specials", active: false, suggestedCategory: "Game Props", suggestedSubcategory: "" },
             { id: "fb_34", specificMarket: "Odd/Even (incl. Overtime)", sportsradarType: "Specials", active: true, suggestedCategory: "Game Props", suggestedSubcategory: "" },
-            { id: "fb_35", specificMarket: "Total Touchdowns (incl. Overtime)", sportsradarType: "Specials", active: true, suggestedCategory: "Game Props", suggestedSubcategory: "TD Props" },
+            { id: "fb_35", specificMarket: "Total Touchdowns (incl. Overtime)", sportsradarType: "Specials", active: true, suggestedCategory: "Game Props", suggestedSubcategory: "" },
             { id: "fb_36", specificMarket: "Total Field Goals Made (incl. Overtime)", sportsradarType: "Specials", active: true, suggestedCategory: "Game Props", suggestedSubcategory: "" },
             { id: "fb_37", specificMarket: "Total Turnovers (incl. Overtime)", sportsradarType: "Specials", active: true, suggestedCategory: "Game Props", suggestedSubcategory: "" },
             { id: "fb_38", specificMarket: "Total Sacks (incl. Overtime)", sportsradarType: "Specials", active: true, suggestedCategory: "Game Props", suggestedSubcategory: "" },
