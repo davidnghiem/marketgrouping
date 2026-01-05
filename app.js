@@ -402,6 +402,7 @@ function renderTableView(container) {
                 <div class="table-header">
                     <div>#</div>
                     <div>Market Name</div>
+                    <div>Display Name</div>
                     <div>Sportsradar Type</div>
                     <div>Suggested Category</div>
                     <div>Subcategory</div>
@@ -413,12 +414,12 @@ function renderTableView(container) {
 
     filteredMarkets.forEach((market, index) => {
         const needsReview = market.needsReview || false;
-        const displayName = getMarketDisplayName(market);
-        const isRenamed = hasCustomName(market);
+        const displayName = market.displayName || '';
         html += `
             <div class="table-row" data-id="${market.id}">
                 <div class="row-number">${index + 1}</div>
-                <div class="market-name ${isRenamed ? 'renamed' : ''}" ${isRenamed ? `data-original="${market.specificMarket}"` : ''}>${displayName}</div>
+                <div>${market.specificMarket}</div>
+                <div class="display-name-cell">${displayName || '-'}</div>
                 <div><span class="badge badge-subcategory">${market.sportsradarType}</span></div>
                 <div class="editable-cell" onclick="editMarketCategory('${market.id}', 'suggestedCategory', event)">${market.suggestedCategory || '-'}</div>
                 <div class="editable-cell" onclick="editMarketCategory('${market.id}', 'suggestedSubcategory', event)">${market.suggestedSubcategory || '-'}</div>
