@@ -4,6 +4,7 @@ let currentView = 'cards';
 let filteredMarkets = [];
 let editingMarketId = null;
 let cardsGroupBy = 'suggested'; // 'suggested' or 'current'
+let showOriginalNames = false; // Toggle between original and custom display names
 
 // Constants
 const VIEW_MODES = {
@@ -190,6 +191,29 @@ function setCardsGroupBy(mode) {
     renderContent();
 }
 
+function toggleNameDisplay() {
+    showOriginalNames = !showOriginalNames;
+    // Update toggle button text
+    const toggleBtn = document.getElementById('nameDisplayToggle');
+    if (toggleBtn) {
+        toggleBtn.textContent = showOriginalNames ? 'Original Names' : 'Custom Names';
+    }
+    renderContent();
+}
+
+// Helper to get the display name for a market
+function getMarketDisplayName(market) {
+    if (showOriginalNames) {
+        return market.specificMarket;
+    }
+    return market.displayName || market.specificMarket;
+}
+
+// Check if market has a custom display name
+function hasCustomName(market) {
+    return market.displayName && market.displayName !== market.specificMarket;
+}
+
 // Render cards view
 function renderCardsView(container) {
     const sport = sportsData[currentSport];
@@ -337,6 +361,8 @@ function renderCardsView(container) {
             sortedMarkets.forEach((market, index) => {
                 const subcategory = isSuggested ? market.suggestedSubcategory : '';
                 const needsReview = market.needsReview || false;
+                const displayName = getMarketDisplayName(market);
+                const isRenamed = hasCustomName(market);
                 html += `
                     <div class="market-item ${market.active ? '' : 'inactive'} ${!isSuggested ? 'readonly' : ''}"
                          ${isSuggested ? 'draggable="true"' : ''}
@@ -344,7 +370,7 @@ function renderCardsView(container) {
                          data-category="${category}"
                          data-index="${index}"
                          ${isSuggested ? `ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)" ondragover="handleItemDragOver(event)" ondragleave="handleItemDragLeave(event)" ondrop="handleItemDrop(event)" onclick="openMarketModal('${market.id}')"` : ''}>
-                        <span class="market-name">${market.specificMarket}</span>
+                        <span class="market-name ${isRenamed ? 'renamed' : ''}" ${isRenamed ? `data-original="${market.specificMarket}"` : ''}>${displayName}</span>
                         <div class="market-badges">
                             ${subcategory ? `<span class="badge badge-subcategory">${subcategory}</span>` : ''}
                             <span class="badge ${market.active ? 'badge-active' : 'badge-inactive'}">
@@ -386,10 +412,12 @@ function renderTableView(container) {
 
     filteredMarkets.forEach((market, index) => {
         const needsReview = market.needsReview || false;
+        const displayName = getMarketDisplayName(market);
+        const isRenamed = hasCustomName(market);
         html += `
             <div class="table-row" data-id="${market.id}">
                 <div class="row-number">${index + 1}</div>
-                <div>${market.specificMarket}</div>
+                <div class="market-name ${isRenamed ? 'renamed' : ''}" ${isRenamed ? `data-original="${market.specificMarket}"` : ''}>${displayName}</div>
                 <div><span class="badge badge-subcategory">${market.sportsradarType}</span></div>
                 <div class="editable-cell" onclick="editMarketCategory('${market.id}', 'suggestedCategory', event)">${market.suggestedCategory || '-'}</div>
                 <div class="editable-cell" onclick="editMarketCategory('${market.id}', 'suggestedSubcategory', event)">${market.suggestedSubcategory || '-'}</div>
@@ -1069,7 +1097,8 @@ function openMarketModal(marketId) {
 
     if (!market) return;
 
-    document.getElementById('marketName').value = market.specificMarket;
+    document.getElementById('marketOriginalName').value = market.specificMarket;
+    document.getElementById('marketDisplayName').value = market.displayName || '';
     document.getElementById('marketSportsradarType').value = market.sportsradarType;
     document.getElementById('marketCurrentCategory').value = getCurrentCategory(market) || '-';
     document.getElementById('marketActive').value = market.active.toString();
@@ -1116,6 +1145,10 @@ function saveMarket() {
         market.suggestedCategory = document.getElementById('marketCategory').value;
         market.suggestedSubcategory = document.getElementById('marketSubcategory').value;
         market.active = document.getElementById('marketActive').value === 'true';
+
+        // Save display name (empty string means use original)
+        const displayName = document.getElementById('marketDisplayName').value.trim();
+        market.displayName = displayName;
 
         closeMarketModal();
         updateStats();
