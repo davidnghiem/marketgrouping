@@ -90,6 +90,50 @@
         .main-actions {
             display: flex;
             gap: var(--spacing-md);
+            align-items: center;
+        }
+
+        .storage-info-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .storage-info-icon {
+            cursor: help;
+            font-size: 16px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .storage-info-icon:hover {
+            opacity: 1;
+        }
+
+        .storage-info-tooltip {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: #1e2732;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            width: 280px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--color-text-secondary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        .storage-info-tooltip strong {
+            color: var(--color-text);
+        }
+
+        .storage-info-wrapper:hover .storage-info-tooltip {
+            display: block;
         }
 
         .btn {
@@ -1169,6 +1213,15 @@
                     <button class="btn btn-secondary" onclick="importData()">Import</button>
                     <button class="btn btn-primary" onclick="exportData()">Export JSON</button>
                     <button class="btn btn-success" onclick="exportCSV()">Export CSV</button>
+                    <div class="storage-info-wrapper">
+                        <span class="storage-info-icon" title="">ℹ️</span>
+                        <div class="storage-info-tooltip">
+                            <strong>How saving works:</strong><br>
+                            Changes are temporary and stored in memory only. If you reload the page, all changes will reset to defaults.<br><br>
+                            <strong>To save your work:</strong><br>
+                            Use "Export JSON" to download your changes, then "Import" to restore them later.
+                        </div>
+                    </div>
                 </div>
             </div>
 
