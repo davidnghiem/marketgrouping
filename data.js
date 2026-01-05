@@ -702,11 +702,18 @@ const competitorData = {
             categories: [
                 { name: "Popular", subcategories: [] },
                 { name: "Match Lines", subcategories: [] },
-                { name: "Goals", subcategories: ["Total Goals", "Both Teams To Score", "Team Goals"] },
-                { name: "Halves", subcategories: ["1st Half", "2nd Half"] },
+                { name: "Goalscorer Props", subcategories: [] },
+                { name: "Player Shots", subcategories: [] },
+                { name: "Player Assists", subcategories: [] },
+                { name: "Player Props", subcategories: [] },
+                { name: "Player Parlays", subcategories: [] },
+                { name: "Match Props", subcategories: [] },
+                { name: "Halves", subcategories: [] },
+                { name: "Team Props", subcategories: [] },
+                { name: "Spread/Total", subcategories: [] },
                 { name: "Corners", subcategories: [] },
-                { name: "Goalscorers", subcategories: ["Anytime", "First", "Last"] },
-                { name: "Specials", subcategories: [] }
+                { name: "Cards", subcategories: [] },
+                { name: "Match Parlays", subcategories: [] }
             ]
         },
         hockey: {
