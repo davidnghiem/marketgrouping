@@ -247,7 +247,7 @@ function renderCardsView(container) {
         <div class="cards-header">
             <div class="view-info">
                 <span class="info-icon">ℹ️</span>
-                <span>Showing <strong>${isSuggested ? 'Suggested' : 'Current'} Categories</strong>${isSuggested ? ' — drag markets to reorder or move between categories' : ''}</span>
+                <span>Showing <strong>${isSuggested ? 'Suggested' : 'Current'} Categories</strong>${isSuggested ? ' — drag to reorder markets, move between categories, or reorder category cards' : ''}</span>
             </div>
             <div class="group-toggle">
                 <button class="group-btn ${isSuggested ? 'active' : ''}" onclick="setCardsGroupBy('suggested')">Suggested</button>
@@ -257,16 +257,28 @@ function renderCardsView(container) {
         <div class="categories-container">
     `;
 
-    Object.entries(displayMarkets).sort().forEach(([category, markets]) => {
+    // Sort categories by their order (if defined) or alphabetically
+    const sortedCategories = Object.entries(displayMarkets).sort((a, b) => {
+        const catConfigA = sport.suggestedCategories.find(c => c.name === a[0]);
+        const catConfigB = sport.suggestedCategories.find(c => c.name === b[0]);
+        const orderA = catConfigA?.order ?? 999;
+        const orderB = catConfigB?.order ?? 999;
+        if (orderA !== orderB) return orderA - orderB;
+        return a[0].localeCompare(b[0]);
+    });
+
+    sortedCategories.forEach(([category, markets], cardIndex) => {
         html += `
-            <div class="category-card" data-category="${category}">
+            <div class="category-card" data-category="${category}" ${isSuggested ? `draggable="true" ondragstart="handleCardDragStart(event)" ondragend="handleCardDragEnd(event)" ondragover="handleCardDragOver(event)" ondragleave="handleCardDragLeave(event)" ondrop="handleCardDrop(event)"` : ''}>
                 <div class="category-header">
                     <div class="category-title">
+                        ${isSuggested ? `<span class="category-order">${cardIndex + 1}</span>` : ''}
                         ${category}
                         <span class="category-count">${markets.length}</span>
                     </div>
                     ${isSuggested ? `
                     <div class="category-actions">
+                        <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
                         <button class="icon-btn" onclick="editCategory('${category}')" title="Edit category">✏️</button>
                     </div>
                     ` : ''}
@@ -281,7 +293,24 @@ function renderCardsView(container) {
                 </div>
             `;
         } else {
-            markets.forEach((market, index) => {
+            // Sort markets by subcategory to group them together
+            const sortedMarkets = [...markets].sort((a, b) => {
+                const subA = (isSuggested ? a.suggestedSubcategory : '') || '';
+                const subB = (isSuggested ? b.suggestedSubcategory : '') || '';
+
+                // Special case: Football Player Props - TD Props comes first
+                if (currentSport === 'football' && category === 'Player Props') {
+                    if (subA === 'TD Props' && subB !== 'TD Props') return -1;
+                    if (subB === 'TD Props' && subA !== 'TD Props') return 1;
+                }
+
+                // Markets without subcategory come first, then sort alphabetically by subcategory
+                if (!subA && subB) return -1;
+                if (subA && !subB) return 1;
+                return subA.localeCompare(subB);
+            });
+
+            sortedMarkets.forEach((market, index) => {
                 const subcategory = isSuggested ? market.suggestedSubcategory : '';
                 const needsReview = market.needsReview || false;
                 html += `
@@ -714,6 +743,111 @@ function handleItemDrop(event) {
 
     renderContent();
     updateStats();
+}
+
+// Category card drag and drop handlers
+let draggingCard = null;
+
+function handleCardDragStart(event) {
+    draggingCard = event.currentTarget;
+    event.currentTarget.classList.add('card-dragging');
+    event.dataTransfer.setData('text/card', event.currentTarget.dataset.category);
+    event.dataTransfer.effectAllowed = 'move';
+}
+
+function handleCardDragEnd(event) {
+    event.currentTarget.classList.remove('card-dragging');
+    document.querySelectorAll('.card-drop-left, .card-drop-right').forEach(el => {
+        el.classList.remove('card-drop-left', 'card-drop-right');
+    });
+    draggingCard = null;
+}
+
+function handleCardDragOver(event) {
+    // Only handle if we're dragging a card (not a market)
+    if (!draggingCard) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const targetCard = event.currentTarget;
+    if (targetCard === draggingCard) return;
+
+    // Determine if we're on the left or right half
+    const rect = targetCard.getBoundingClientRect();
+    const midpoint = rect.left + rect.width / 2;
+
+    // Remove existing indicators
+    document.querySelectorAll('.card-drop-left, .card-drop-right').forEach(el => {
+        el.classList.remove('card-drop-left', 'card-drop-right');
+    });
+
+    if (event.clientX < midpoint) {
+        targetCard.classList.add('card-drop-left');
+    } else {
+        targetCard.classList.add('card-drop-right');
+    }
+}
+
+function handleCardDragLeave(event) {
+    if (!draggingCard) return;
+    event.currentTarget.classList.remove('card-drop-left', 'card-drop-right');
+}
+
+function handleCardDrop(event) {
+    if (!draggingCard) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const targetCard = event.currentTarget;
+    const draggedCategory = event.dataTransfer.getData('text/card');
+    const targetCategory = targetCard.dataset.category;
+
+    // Remove visual indicators
+    document.querySelectorAll('.card-drop-left, .card-drop-right').forEach(el => {
+        el.classList.remove('card-drop-left', 'card-drop-right');
+    });
+
+    if (draggedCategory === targetCategory) return;
+
+    const sport = sportsData[currentSport];
+
+    // Determine drop position (left or right of target)
+    const rect = targetCard.getBoundingClientRect();
+    const dropAfter = event.clientX > rect.left + rect.width / 2;
+
+    // Get current category configs
+    const draggedConfig = sport.suggestedCategories.find(c => c.name === draggedCategory);
+    const targetConfig = sport.suggestedCategories.find(c => c.name === targetCategory);
+
+    if (!draggedConfig || !targetConfig) return;
+
+    // Initialize orders if not set
+    sport.suggestedCategories.forEach((cat, idx) => {
+        if (cat.order === undefined) cat.order = idx;
+    });
+
+    // Get sorted list of categories
+    const sorted = [...sport.suggestedCategories].sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+
+    // Remove dragged from list
+    const draggedIndex = sorted.indexOf(draggedConfig);
+    sorted.splice(draggedIndex, 1);
+
+    // Find target index after removal
+    const targetIndex = sorted.indexOf(targetConfig);
+
+    // Insert at new position
+    const insertIndex = dropAfter ? targetIndex + 1 : targetIndex;
+    sorted.splice(insertIndex, 0, draggedConfig);
+
+    // Update order values
+    sorted.forEach((cat, idx) => {
+        cat.order = idx;
+    });
+
+    renderContent();
 }
 
 // Toggle market active status
@@ -1177,6 +1311,18 @@ function closeCategoryDropdown() {
 
 // Export functions
 function exportData() {
+    // Ensure all categories have order set before exporting
+    Object.values(sportsData).forEach(sport => {
+        sport.suggestedCategories.forEach((cat, idx) => {
+            if (cat.order === undefined) cat.order = idx;
+        });
+        // Sort categories by order and re-index
+        sport.suggestedCategories.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+        sport.suggestedCategories.forEach((cat, idx) => {
+            cat.order = idx;
+        });
+    });
+
     const exportObj = {
         exportDate: new Date().toISOString(),
         sports: sportsData

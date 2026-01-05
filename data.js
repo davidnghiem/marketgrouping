@@ -15,14 +15,14 @@ const sportsData = {
             { name: "All", subcategories: [] }
         ],
         suggestedCategories: [
-            { name: "Popular", subcategories: [] },
-            { name: "Game Lines", subcategories: [] },
-            { name: "Halves", subcategories: [] },
-            { name: "Quarters", subcategories: [] },
-            { name: "Game Props", subcategories: [] },
-            { name: "Player Props", subcategories: ["Passing Props", "Rushing Props", "Receiving Props", "TD Props"] },
-            { name: "Special Teams", subcategories: [] },
-            { name: "Totals", subcategories: [] }
+            { name: "Popular", subcategories: [], order: 0 },
+            { name: "Game Lines", subcategories: [], order: 1 },
+            { name: "Player Props", subcategories: ["Passing Props", "Rushing Props", "Receiving Props", "TD Props"], order: 2 },
+            { name: "Game Props", subcategories: [], order: 3 },
+            { name: "Halves", subcategories: [], order: 4 },
+            { name: "Quarters", subcategories: [], order: 5 },
+            { name: "Special Teams", subcategories: [], order: 6 },
+            { name: "Totals", subcategories: [], order: 7 }
         ],
         markets: [
             { id: "fb_1", specificMarket: "Winner (incl. Overtime)", sportsradarType: "Main", active: true, suggestedCategory: "Game Lines", suggestedSubcategory: "" },
@@ -122,13 +122,13 @@ const sportsData = {
             { name: "All", subcategories: [] }
         ],
         suggestedCategories: [
-            { name: "Popular", subcategories: [] },
-            { name: "Game Lines", subcategories: [] },
-            { name: "Halves", subcategories: [] },
-            { name: "Quarters", subcategories: [] },
-            { name: "Points", subcategories: [] },
-            { name: "Game Props", subcategories: [] },
-            { name: "Player Props", subcategories: ["Points", "Rebounds", "Assists", "3-Pointers", "Blocks", "Steals", "Combos"] }
+            { name: "Popular", subcategories: [], order: 0 },
+            { name: "Game Lines", subcategories: [], order: 1 },
+            { name: "Player Props", subcategories: ["Points", "Rebounds", "Assists", "3-Pointers", "Blocks", "Steals", "Combos"], order: 2 },
+            { name: "Game Props", subcategories: [], order: 3 },
+            { name: "Points", subcategories: [], order: 4 },
+            { name: "Halves", subcategories: [], order: 5 },
+            { name: "Quarters", subcategories: [], order: 6 }
         ],
         markets: [
             { id: "bb_1", specificMarket: "Winner (incl. Overtime)", sportsradarType: "Main", active: true, suggestedCategory: "Game Lines", suggestedSubcategory: "" },
@@ -257,15 +257,15 @@ const sportsData = {
             { name: "All", subcategories: [] }
         ],
         suggestedCategories: [
-            { name: "Popular", subcategories: [] },
-            { name: "Match Lines", subcategories: [] },
-            { name: "Goals", subcategories: [] },
-            { name: "Halves", subcategories: [] },
-            { name: "Corners", subcategories: [] },
-            { name: "Goalscorers", subcategories: [] },
-            { name: "Game Props", subcategories: [] },
-            { name: "Player Props", subcategories: ["Goals", "Assists", "Shots", "Cards"] },
-            { name: "Others", subcategories: [] }
+            { name: "Popular", subcategories: [], order: 0 },
+            { name: "Match Lines", subcategories: [], order: 1 },
+            { name: "Player Props", subcategories: ["Goals", "Assists", "Shots", "Cards"], order: 2 },
+            { name: "Goalscorers", subcategories: [], order: 3 },
+            { name: "Goals", subcategories: [], order: 4 },
+            { name: "Corners", subcategories: [], order: 5 },
+            { name: "Game Props", subcategories: [], order: 6 },
+            { name: "Halves", subcategories: [], order: 7 },
+            { name: "Others", subcategories: [], order: 8 }
         ],
         markets: [
             { id: "sc_1", specificMarket: "1x2", sportsradarType: "Main Markets", active: true, suggestedCategory: "Match Lines", suggestedSubcategory: "" },
@@ -448,12 +448,12 @@ const sportsData = {
             { name: "All", subcategories: [] }
         ],
         suggestedCategories: [
-            { name: "Popular", subcategories: [] },
-            { name: "Game Lines", subcategories: [] },
-            { name: "Goals", subcategories: [] },
-            { name: "Periods", subcategories: [] },
-            { name: "Game Props", subcategories: [] },
-            { name: "Player Props", subcategories: ["Goals", "Assists", "Points", "Shots", "Saves"] }
+            { name: "Popular", subcategories: [], order: 0 },
+            { name: "Game Lines", subcategories: [], order: 1 },
+            { name: "Player Props", subcategories: ["Goals", "Assists", "Points", "Shots", "Saves"], order: 2 },
+            { name: "Goals", subcategories: [], order: 3 },
+            { name: "Periods", subcategories: [], order: 4 },
+            { name: "Game Props", subcategories: [], order: 5 }
         ],
         markets: [
             { id: "hk_1", specificMarket: "1x2", sportsradarType: "Main Markets", active: true, suggestedCategory: "Game Lines", suggestedSubcategory: "" },
@@ -536,11 +536,11 @@ const sportsData = {
             { name: "All", subcategories: [] }
         ],
         suggestedCategories: [
-            { name: "Popular", subcategories: [] },
-            { name: "Match Lines", subcategories: [] },
-            { name: "Sets", subcategories: [] },
-            { name: "Games", subcategories: [] },
-            { name: "Game Props", subcategories: [] }
+            { name: "Popular", subcategories: [], order: 0 },
+            { name: "Match Lines", subcategories: [], order: 1 },
+            { name: "Sets", subcategories: [], order: 2 },
+            { name: "Games", subcategories: [], order: 3 },
+            { name: "Game Props", subcategories: [], order: 4 }
         ],
         markets: [
             { id: "tn_1", specificMarket: "Winner", sportsradarType: "Main Markets", active: true, suggestedCategory: "Match Lines", suggestedSubcategory: "" },
@@ -589,11 +589,11 @@ const sportsData = {
             { name: "Player Props", subcategories: [] }
         ],
         suggestedCategories: [
-            { name: "Popular", subcategories: [] },
-            { name: "Game Lines", subcategories: [] },
-            { name: "Runs", subcategories: [] },
-            { name: "Game Props", subcategories: [] },
-            { name: "Player Props", subcategories: ["Batter Props", "Pitcher Props"] }
+            { name: "Popular", subcategories: [], order: 0 },
+            { name: "Game Lines", subcategories: [], order: 1 },
+            { name: "Player Props", subcategories: ["Batter Props", "Pitcher Props"], order: 2 },
+            { name: "Runs", subcategories: [], order: 3 },
+            { name: "Game Props", subcategories: [], order: 4 }
         ],
         markets: [
             { id: "bs_1", specificMarket: "Winner (incl. Overtime)", sportsradarType: "Main", active: true, suggestedCategory: "Game Lines", suggestedSubcategory: "" },

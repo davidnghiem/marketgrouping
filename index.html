@@ -451,7 +451,51 @@
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+        }
+
+        .category-order {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: var(--color-primary);
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .drag-handle {
+            cursor: grab;
+            color: var(--color-text-muted);
+            font-size: 14px;
+            padding: 4px;
+            letter-spacing: -2px;
+            user-select: none;
+        }
+
+        .drag-handle:hover {
+            color: var(--color-text);
+        }
+
+        .category-card[draggable="true"] {
+            cursor: grab;
+        }
+
+        .category-card.card-dragging {
+            opacity: 0.5;
+            transform: scale(0.98);
+        }
+
+        .category-card.card-drop-left {
+            border-left: 3px solid var(--color-primary) !important;
+        }
+
+        .category-card.card-drop-right {
+            border-right: 3px solid var(--color-primary) !important;
         }
 
         .category-count {
