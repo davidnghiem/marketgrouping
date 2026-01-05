@@ -582,7 +582,12 @@ const sportsData = {
     baseball: {
         name: "Baseball",
         icon: "⚾",
-        currentCategories: [],
+        currentCategories: [
+            { name: "Main", subcategories: [] },
+            { name: "Runs", subcategories: [] },
+            { name: "Specials", subcategories: [] },
+            { name: "Player Props", subcategories: [] }
+        ],
         suggestedCategories: [
             { name: "Popular", subcategories: [] },
             { name: "Game Lines", subcategories: [] },
@@ -682,6 +687,36 @@ const competitorData = {
                 { name: "Corners", subcategories: [] },
                 { name: "Goalscorers", subcategories: ["Anytime", "First", "Last"] },
                 { name: "Specials", subcategories: [] }
+            ]
+        },
+        hockey: {
+            categories: [
+                { name: "Popular", subcategories: [] },
+                { name: "Game Lines", subcategories: [] },
+                { name: "Goal Props", subcategories: ["Total Goals", "Team Goals", "Period Goals"] },
+                { name: "Player Props", subcategories: ["Goals", "Assists", "Points", "Shots"] },
+                { name: "Period Lines", subcategories: ["1st Period", "2nd Period", "3rd Period"] },
+                { name: "Game Props", subcategories: [] }
+            ]
+        },
+        tennis: {
+            categories: [
+                { name: "Popular", subcategories: [] },
+                { name: "Match Lines", subcategories: [] },
+                { name: "Set Betting", subcategories: ["Correct Score", "Set Handicap"] },
+                { name: "Game Props", subcategories: ["Total Games", "Game Handicap"] },
+                { name: "Set Props", subcategories: ["1st Set", "2nd Set"] },
+                { name: "Player Props", subcategories: ["Aces", "Double Faults"] }
+            ]
+        },
+        baseball: {
+            categories: [
+                { name: "Popular", subcategories: [] },
+                { name: "Game Lines", subcategories: [] },
+                { name: "Run Lines", subcategories: ["Total Runs", "Team Runs", "Innings"] },
+                { name: "Player Props", subcategories: ["Batter Props", "Pitcher Props"] },
+                { name: "Inning Props", subcategories: ["1st Inning", "First 5 Innings"] },
+                { name: "Game Props", subcategories: ["Home Runs", "Hits", "Errors"] }
             ]
         }
     }

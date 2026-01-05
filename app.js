@@ -22,11 +22,26 @@ function initializeSportList() {
         li.className = `sport-item ${key === currentSport ? 'active' : ''}`;
         li.innerHTML = `
             <span class="sport-icon">${sport.icon}</span>
-            <span>${sport.name}</span>
+            <span class="sport-name">${sport.name}</span>
+            <span class="sport-tooltip">${sport.name}</span>
         `;
         li.onclick = () => selectSport(key);
         sportList.appendChild(li);
     });
+}
+
+// Toggle sidebar collapsed state
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = sidebar.querySelector('.sidebar-toggle');
+    sidebar.classList.toggle('collapsed');
+
+    // Update toggle button icon
+    if (sidebar.classList.contains('collapsed')) {
+        toggleBtn.innerHTML = '▶';
+    } else {
+        toggleBtn.innerHTML = '◀';
+    }
 }
 
 // Select a sport
@@ -185,7 +200,13 @@ function renderCardsView(container) {
         return;
     }
 
-    let html = '<div class="categories-container">';
+    let html = `
+        <div class="view-info">
+            <span class="info-icon">ℹ️</span>
+            <span>Showing <strong>Suggested Categories</strong> — drag markets between categories to reorganize</span>
+        </div>
+        <div class="categories-container">
+    `;
 
     Object.entries(groupedMarkets).sort().forEach(([category, markets]) => {
         html += `
@@ -243,15 +264,16 @@ function renderCardsView(container) {
 function renderTableView(container) {
     let html = `
         <div class="table-view">
-            <div class="table-header">
-                <div>#</div>
-                <div>Market Name</div>
-                <div>Sportsradar Type</div>
-                <div>Suggested Category</div>
-                <div>Subcategory</div>
-                <div>Current Category</div>
-                <div>Active</div>
-            </div>
+            <div class="table-inner">
+                <div class="table-header">
+                    <div>#</div>
+                    <div>Market Name</div>
+                    <div>Sportsradar Type</div>
+                    <div>Suggested Category</div>
+                    <div>Subcategory</div>
+                    <div>Current Category</div>
+                    <div>Active</div>
+                </div>
     `;
 
     filteredMarkets.forEach((market, index) => {
@@ -273,8 +295,120 @@ function renderTableView(container) {
         `;
     });
 
-    html += '</div>';
+    // Add Market button row
+    html += `
+                <div class="add-market-row" id="addMarketRow">
+                    <button class="btn btn-secondary add-market-btn" onclick="showAddMarketForm()">+ Add Market</button>
+                </div>
+    `;
+
+    html += '</div></div>';
     container.innerHTML = html;
+}
+
+// Show add market form
+function showAddMarketForm() {
+    const sport = sportsData[currentSport];
+    const sportsradarTypes = [...new Set(sport.markets.map(m => m.sportsradarType))].sort();
+    const categories = sport.suggestedCategories.map(c => c.name);
+
+    const addMarketRow = document.getElementById('addMarketRow');
+    addMarketRow.innerHTML = `
+        <div class="add-market-form">
+            <div class="form-row">
+                <input type="text" id="newMarketName" placeholder="Market Name" class="form-input" required>
+                <select id="newSportsradarType" class="form-select">
+                    ${sportsradarTypes.map(t => `<option value="${t}">${t}</option>`).join('')}
+                </select>
+                <select id="newCategory" class="form-select" onchange="updateNewSubcategoryOptions()">
+                    ${categories.map(c => `<option value="${c}">${c}</option>`).join('')}
+                </select>
+                <select id="newSubcategory" class="form-select">
+                    <option value="">None</option>
+                </select>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="newMarketActive" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-success" onclick="saveNewMarket()">Save</button>
+                <button class="btn btn-secondary" onclick="cancelAddMarket()">Cancel</button>
+            </div>
+        </div>
+    `;
+
+    // Initialize subcategory options
+    updateNewSubcategoryOptions();
+
+    // Focus on the name input
+    document.getElementById('newMarketName').focus();
+}
+
+// Update subcategory options based on selected category
+function updateNewSubcategoryOptions() {
+    const sport = sportsData[currentSport];
+    const selectedCategory = document.getElementById('newCategory').value;
+    const categoryConfig = sport.suggestedCategories.find(c => c.name === selectedCategory);
+    const subcategories = categoryConfig ? categoryConfig.subcategories : [];
+
+    const subcategorySelect = document.getElementById('newSubcategory');
+    subcategorySelect.innerHTML = '<option value="">None</option>';
+    subcategories.forEach(sub => {
+        subcategorySelect.innerHTML += `<option value="${sub}">${sub}</option>`;
+    });
+}
+
+// Generate unique market ID
+function generateMarketId(sport) {
+    const prefix = {
+        football: 'fb',
+        basketball: 'bb',
+        soccer: 'sc',
+        hockey: 'hk',
+        tennis: 'tn',
+        baseball: 'bs'
+    }[sport];
+
+    const existingIds = sportsData[sport].markets.map(m => {
+        const parts = m.id.split('_');
+        return parseInt(parts[1]) || 0;
+    });
+    const nextNum = Math.max(...existingIds, 0) + 1;
+    return `${prefix}_${nextNum}`;
+}
+
+// Save new market
+function saveNewMarket() {
+    const name = document.getElementById('newMarketName').value.trim();
+    const sportsradarType = document.getElementById('newSportsradarType').value;
+    const category = document.getElementById('newCategory').value;
+    const subcategory = document.getElementById('newSubcategory').value;
+    const active = document.getElementById('newMarketActive').checked;
+
+    if (!name) {
+        alert('Please enter a market name');
+        return;
+    }
+
+    const newMarket = {
+        id: generateMarketId(currentSport),
+        specificMarket: name,
+        sportsradarType: sportsradarType,
+        active: active,
+        suggestedCategory: category,
+        suggestedSubcategory: subcategory
+    };
+
+    sportsData[currentSport].markets.push(newMarket);
+    updateStats();
+    updateCategoryFilter();
+    renderContent();
+}
+
+// Cancel add market
+function cancelAddMarket() {
+    renderContent();
 }
 
 // Render comparison view
@@ -507,6 +641,8 @@ function openMarketModal(marketId) {
     if (!market) return;
 
     document.getElementById('marketName').value = market.specificMarket;
+    document.getElementById('marketSportsradarType').value = market.sportsradarType;
+    document.getElementById('marketCurrentCategory').value = getCurrentCategory(market) || '-';
     document.getElementById('marketActive').value = market.active.toString();
 
     // Populate category dropdown
@@ -614,6 +750,18 @@ function editMarketCategory(marketId, field, event) {
     dropdown.id = 'categoryDropdown';
     dropdown.style.top = `${rect.bottom + window.scrollY + 4}px`;
     dropdown.style.left = `${rect.left + window.scrollX}px`;
+
+    // Add "None" option for subcategory field
+    if (field === 'suggestedSubcategory') {
+        const noneItem = document.createElement('div');
+        noneItem.className = `category-dropdown-item ${!currentValue ? 'selected' : ''}`;
+        noneItem.innerHTML = `${!currentValue ? '✓ ' : ''}None`;
+        noneItem.onclick = (e) => {
+            e.stopPropagation();
+            selectCategory(marketId, field, '');
+        };
+        dropdown.appendChild(noneItem);
+    }
 
     // Add options
     options.forEach(option => {
