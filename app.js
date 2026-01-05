@@ -297,11 +297,35 @@ function renderCardsView(container) {
             const sortedMarkets = [...markets].sort((a, b) => {
                 const subA = (isSuggested ? a.suggestedSubcategory : '') || '';
                 const subB = (isSuggested ? b.suggestedSubcategory : '') || '';
+                const nameA = a.specificMarket;
+                const nameB = b.specificMarket;
 
                 // Special case: Football Player Props - TD Props comes first
                 if (currentSport === 'football' && category === 'Player Props') {
                     if (subA === 'TD Props' && subB !== 'TD Props') return -1;
                     if (subB === 'TD Props' && subA !== 'TD Props') return 1;
+                }
+
+                // Special case: Football Halves - Halftime/Fulltime first, Highest Scoring Half second
+                if (currentSport === 'football' && category === 'Halves') {
+                    const isHalftimeA = nameA === 'Halftime/Fulltime';
+                    const isHalftimeB = nameB === 'Halftime/Fulltime';
+                    const isHighestA = nameA === 'Highest Scoring Half';
+                    const isHighestB = nameB === 'Highest Scoring Half';
+
+                    if (isHalftimeA) return -1;
+                    if (isHalftimeB) return 1;
+                    if (isHighestA) return -1;
+                    if (isHighestB) return 1;
+                }
+
+                // Special case: Football Game Props - Odd/Even markets at the top
+                if (currentSport === 'football' && category === 'Game Props') {
+                    const isOddEvenA = nameA.toLowerCase().includes('odd/even');
+                    const isOddEvenB = nameB.toLowerCase().includes('odd/even');
+
+                    if (isOddEvenA && !isOddEvenB) return -1;
+                    if (isOddEvenB && !isOddEvenA) return 1;
                 }
 
                 // Markets without subcategory come first, then sort alphabetically by subcategory
