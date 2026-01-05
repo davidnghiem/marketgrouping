@@ -22,7 +22,8 @@ const sportsData = {
             { name: "Halves", subcategories: [], order: 4 },
             { name: "Quarters", subcategories: [], order: 5 },
             { name: "Special Teams", subcategories: [], order: 6 },
-            { name: "Totals", subcategories: [], order: 7 }
+            { name: "Totals", subcategories: [], order: 7 },
+            { name: "All", subcategories: [], order: 8 }
         ],
         markets: [
             { id: "fb_1", specificMarket: "Winner (incl. Overtime)", sportsradarType: "Main", active: true, suggestedCategory: "Game Lines", suggestedSubcategory: "" },
@@ -52,18 +53,18 @@ const sportsData = {
             { id: "fb_25", specificMarket: "2nd Half - Total", sportsradarType: "2nd Half", active: false, suggestedCategory: "Halves", suggestedSubcategory: "" },
             { id: "fb_26", specificMarket: "Winning Margin", sportsradarType: "Points", active: false, suggestedCategory: "Game Props", suggestedSubcategory: "" },
             { id: "fb_27", specificMarket: "Highest Scoring Quarter", sportsradarType: "Points", active: true, suggestedCategory: "Quarters", suggestedSubcategory: "" },
-            { id: "fb_28", specificMarket: "Home Total (incl. Overtime)", sportsradarType: "Points", active: true, suggestedCategory: "Game Props", suggestedSubcategory: "" },
-            { id: "fb_29", specificMarket: "Away Total (incl. Overtime)", sportsradarType: "Points", active: true, suggestedCategory: "Game Props", suggestedSubcategory: "" },
+            { id: "fb_28", specificMarket: "Home Total (incl. Overtime)", sportsradarType: "Points", active: true, suggestedCategory: "Totals", suggestedSubcategory: "" },
+            { id: "fb_29", specificMarket: "Away Total (incl. Overtime)", sportsradarType: "Points", active: true, suggestedCategory: "Totals", suggestedSubcategory: "" },
             { id: "fb_30", specificMarket: "Highest Scoring Half", sportsradarType: "Points", active: true, suggestedCategory: "Halves", suggestedSubcategory: "" },
             { id: "fb_31", specificMarket: "Race to X (incl. Overtime)", sportsradarType: "Points", active: false, suggestedCategory: "Game Props", suggestedSubcategory: "" },
             { id: "fb_32", specificMarket: "Will There Be Overtime", sportsradarType: "Specials", active: true, suggestedCategory: "Game Props", suggestedSubcategory: "" },
             { id: "fb_33", specificMarket: "Odd/Even", sportsradarType: "Specials", active: false, suggestedCategory: "Game Props", suggestedSubcategory: "" },
             { id: "fb_34", specificMarket: "Odd/Even (incl. Overtime)", sportsradarType: "Specials", active: true, suggestedCategory: "Game Props", suggestedSubcategory: "" },
             { id: "fb_35", specificMarket: "Total Touchdowns (incl. Overtime)", sportsradarType: "Specials", active: true, suggestedCategory: "Game Props", suggestedSubcategory: "" },
-            { id: "fb_36", specificMarket: "Total Field Goals Made (incl. Overtime)", sportsradarType: "Specials", active: true, suggestedCategory: "Game Props", suggestedSubcategory: "" },
+            { id: "fb_36", specificMarket: "Total Field Goals Made (incl. Overtime)", sportsradarType: "Specials", active: true, suggestedCategory: "Special Teams", suggestedSubcategory: "" },
             { id: "fb_37", specificMarket: "Total Turnovers (incl. Overtime)", sportsradarType: "Specials", active: true, suggestedCategory: "Game Props", suggestedSubcategory: "" },
             { id: "fb_38", specificMarket: "Total Sacks (incl. Overtime)", sportsradarType: "Specials", active: true, suggestedCategory: "Game Props", suggestedSubcategory: "" },
-            { id: "fb_39", specificMarket: "1st Field Goal Made (incl Overtime)", sportsradarType: "Specials", active: false, suggestedCategory: "Game Props", suggestedSubcategory: "" },
+            { id: "fb_39", specificMarket: "1st Field Goal Made (incl Overtime)", sportsradarType: "Specials", active: false, suggestedCategory: "Special Teams", suggestedSubcategory: "" },
             { id: "fb_40", specificMarket: "1st Quarter - Handicap", sportsradarType: "Quarters", active: true, suggestedCategory: "Quarters", suggestedSubcategory: "" },
             { id: "fb_41", specificMarket: "2nd Quarter - Handicap", sportsradarType: "Quarters", active: true, suggestedCategory: "Quarters", suggestedSubcategory: "" },
             { id: "fb_42", specificMarket: "3rd Quarter - Handicap", sportsradarType: "Quarters", active: true, suggestedCategory: "Quarters", suggestedSubcategory: "" },
@@ -96,17 +97,17 @@ const sportsData = {
             { id: "fb_69", specificMarket: "X Total Receptions (incl. Overtime)", sportsradarType: "Player Props", active: true, suggestedCategory: "Player Props", suggestedSubcategory: "Receiving Props" },
             { id: "fb_70", specificMarket: "Player to Score 1st Touchdown (incl. Overtime)", sportsradarType: "Player Props", active: true, suggestedCategory: "Player Props", suggestedSubcategory: "TD Props" },
             { id: "fb_71", specificMarket: "Player Touchdowns (incl. Overtime)", sportsradarType: "Player Props", active: true, suggestedCategory: "Player Props", suggestedSubcategory: "TD Props" },
-            { id: "fb_72", specificMarket: "Winner (incl. OT) & Total (incl. OT)", sportsradarType: "Misc", active: false, suggestedCategory: "Game Props", suggestedSubcategory: "" },
+            { id: "fb_72", specificMarket: "Winner (incl. OT) & Total (incl. OT)", sportsradarType: "Misc", active: false, suggestedCategory: "Totals", suggestedSubcategory: "" },
             { id: "fb_73", specificMarket: "1st Drive - Result", sportsradarType: "Misc", active: false, suggestedCategory: "Game Props", suggestedSubcategory: "" },
-            { id: "fb_74", specificMarket: "Handicap (incl. OT) & Total (incl. OT)", sportsradarType: "Misc", active: false, suggestedCategory: "Game Props", suggestedSubcategory: "" },
+            { id: "fb_74", specificMarket: "Handicap (incl. OT) & Total (incl. OT)", sportsradarType: "Misc", active: false, suggestedCategory: "Totals", suggestedSubcategory: "" },
             { id: "fb_75", specificMarket: "4th Quarter - 1x2 (incl. Overtime)", sportsradarType: "Quarters", active: false, suggestedCategory: "Quarters", suggestedSubcategory: "" },
             { id: "fb_76", specificMarket: "4th Quarter - Draw No Bet (incl. Overtime)", sportsradarType: "Quarters", active: false, suggestedCategory: "Quarters", suggestedSubcategory: "" },
             { id: "fb_77", specificMarket: "4th Quarter - Handicap (incl. Overtime)", sportsradarType: "Quarters", active: false, suggestedCategory: "Quarters", suggestedSubcategory: "" },
             { id: "fb_78", specificMarket: "4th Quarter - Total (incl. Overtime)", sportsradarType: "Quarters", active: false, suggestedCategory: "Quarters", suggestedSubcategory: "" },
-            { id: "fb_79", specificMarket: "1st Quarter 1x2 & 1st Quarter Total", sportsradarType: "Misc", active: false, suggestedCategory: "Game Props", suggestedSubcategory: "" },
-            { id: "fb_80", specificMarket: "1st Quarter Handicap & 1st Quarter Total", sportsradarType: "Misc", active: false, suggestedCategory: "Game Props", suggestedSubcategory: "" },
-            { id: "fb_81", specificMarket: "1st Half 1x2 & 1st Half Total", sportsradarType: "Misc", active: false, suggestedCategory: "Game Props", suggestedSubcategory: "" },
-            { id: "fb_82", specificMarket: "1st Half Handicap & 1st Half Total", sportsradarType: "Misc", active: false, suggestedCategory: "Game Props", suggestedSubcategory: "" }
+            { id: "fb_79", specificMarket: "1st Quarter 1x2 & 1st Quarter Total", sportsradarType: "Misc", active: false, suggestedCategory: "Totals", suggestedSubcategory: "" },
+            { id: "fb_80", specificMarket: "1st Quarter Handicap & 1st Quarter Total", sportsradarType: "Misc", active: false, suggestedCategory: "Totals", suggestedSubcategory: "" },
+            { id: "fb_81", specificMarket: "1st Half 1x2 & 1st Half Total", sportsradarType: "Misc", active: false, suggestedCategory: "Totals", suggestedSubcategory: "" },
+            { id: "fb_82", specificMarket: "1st Half Handicap & 1st Half Total", sportsradarType: "Misc", active: false, suggestedCategory: "Totals", suggestedSubcategory: "" }
         ]
     },
     basketball: {
@@ -128,7 +129,8 @@ const sportsData = {
             { name: "Game Props", subcategories: [], order: 3 },
             { name: "Points", subcategories: [], order: 4 },
             { name: "Halves", subcategories: [], order: 5 },
-            { name: "Quarters", subcategories: [], order: 6 }
+            { name: "Quarters", subcategories: [], order: 6 },
+            { name: "All", subcategories: [], order: 7 }
         ],
         markets: [
             { id: "bb_1", specificMarket: "Winner (incl. Overtime)", sportsradarType: "Main", active: true, suggestedCategory: "Game Lines", suggestedSubcategory: "" },
@@ -265,7 +267,8 @@ const sportsData = {
             { name: "Corners", subcategories: [], order: 5 },
             { name: "Game Props", subcategories: [], order: 6 },
             { name: "Halves", subcategories: [], order: 7 },
-            { name: "Others", subcategories: [], order: 8 }
+            { name: "Others", subcategories: [], order: 8 },
+            { name: "All", subcategories: [], order: 9 }
         ],
         markets: [
             { id: "sc_1", specificMarket: "1x2", sportsradarType: "Main Markets", active: true, suggestedCategory: "Match Lines", suggestedSubcategory: "" },
@@ -453,7 +456,8 @@ const sportsData = {
             { name: "Player Props", subcategories: ["Goals", "Assists", "Points", "Shots", "Saves"], order: 2 },
             { name: "Goals", subcategories: [], order: 3 },
             { name: "Periods", subcategories: [], order: 4 },
-            { name: "Game Props", subcategories: [], order: 5 }
+            { name: "Game Props", subcategories: [], order: 5 },
+            { name: "All", subcategories: [], order: 6 }
         ],
         markets: [
             { id: "hk_1", specificMarket: "1x2", sportsradarType: "Main Markets", active: true, suggestedCategory: "Game Lines", suggestedSubcategory: "" },
@@ -540,7 +544,8 @@ const sportsData = {
             { name: "Match Lines", subcategories: [], order: 1 },
             { name: "Sets", subcategories: [], order: 2 },
             { name: "Games", subcategories: [], order: 3 },
-            { name: "Game Props", subcategories: [], order: 4 }
+            { name: "Game Props", subcategories: [], order: 4 },
+            { name: "All", subcategories: [], order: 5 }
         ],
         markets: [
             { id: "tn_1", specificMarket: "Winner", sportsradarType: "Main Markets", active: true, suggestedCategory: "Match Lines", suggestedSubcategory: "" },
@@ -593,7 +598,8 @@ const sportsData = {
             { name: "Game Lines", subcategories: [], order: 1 },
             { name: "Player Props", subcategories: ["Batter Props", "Pitcher Props"], order: 2 },
             { name: "Runs", subcategories: [], order: 3 },
-            { name: "Game Props", subcategories: [], order: 4 }
+            { name: "Game Props", subcategories: [], order: 4 },
+            { name: "All", subcategories: [], order: 5 }
         ],
         markets: [
             { id: "bs_1", specificMarket: "Winner (incl. Overtime)", sportsradarType: "Main", active: true, suggestedCategory: "Game Lines", suggestedSubcategory: "" },
