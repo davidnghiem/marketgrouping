@@ -304,6 +304,7 @@ function renderCardsView(container) {
                     <div class="category-actions">
                         <span class="drag-handle" title="Drag to reorder">⋮⋮</span>
                         <button class="icon-btn" onclick="editCategory('${category}')" title="Edit category">✏️</button>
+                        <button class="icon-btn icon-btn-danger" onclick="deleteCategory('${category}', event)" title="Delete category">🗑️</button>
                     </div>
                     ` : ''}
                 </div>
@@ -1175,6 +1176,47 @@ function editCategory(category) {
         updateCategoryFilter();
         renderContent();
     }
+}
+
+function deleteCategory(category, event) {
+    if (event) {
+        event.stopPropagation();
+    }
+
+    const sport = sportsData[currentSport];
+    const marketsInCategory = sport.markets.filter(m => m.suggestedCategory === category);
+
+    let confirmMessage = `Are you sure you want to delete the category "${category}"?`;
+    if (marketsInCategory.length > 0) {
+        confirmMessage += `\n\n${marketsInCategory.length} market(s) in this category will be moved to "Uncategorized".`;
+    }
+
+    if (!confirm(confirmMessage)) {
+        return;
+    }
+
+    // Move markets to Uncategorized
+    marketsInCategory.forEach(market => {
+        market.suggestedCategory = 'Uncategorized';
+        market.suggestedSubcategory = '';
+    });
+
+    // Remove the category from suggestedCategories
+    const catIndex = sport.suggestedCategories.findIndex(c => c.name === category);
+    if (catIndex !== -1) {
+        sport.suggestedCategories.splice(catIndex, 1);
+    }
+
+    // Ensure Uncategorized category exists if we moved markets there
+    if (marketsInCategory.length > 0) {
+        const uncategorizedExists = sport.suggestedCategories.find(c => c.name === 'Uncategorized');
+        if (!uncategorizedExists) {
+            sport.suggestedCategories.push({ name: 'Uncategorized', subcategories: [], order: 999 });
+        }
+    }
+
+    updateCategoryFilter();
+    renderContent();
 }
 
 function editSubcategory(categoryName, subcategory) {
