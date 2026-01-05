@@ -676,12 +676,21 @@ const competitorData = {
             categories: [
                 { name: "Popular", subcategories: [] },
                 { name: "Game Lines", subcategories: [] },
-                { name: "Player Points", subcategories: ["Points", "Points 1st Quarter", "Points 1st Half"] },
-                { name: "Player Rebounds", subcategories: ["Rebounds", "Offensive Rebounds", "Defensive Rebounds"] },
-                { name: "Player Assists", subcategories: ["Assists"] },
-                { name: "Player Combos", subcategories: ["Points+Rebounds+Assists", "Points+Assists", "Points+Rebounds"] },
-                { name: "3-Point Props", subcategories: ["3-Pointers Made"] },
-                { name: "Game Props", subcategories: [] }
+                { name: "Quick Hits", subcategories: [] },
+                { name: "Player Points", subcategories: [] },
+                { name: "Player Threes", subcategories: [] },
+                { name: "Player Rebounds", subcategories: [] },
+                { name: "Player Assists", subcategories: [] },
+                { name: "Player Combos", subcategories: [] },
+                { name: "Player Defense", subcategories: [] },
+                { name: "Combined Player Props", subcategories: [] },
+                { name: "Either Player Props", subcategories: [] },
+                { name: "H2H Player Props", subcategories: [] },
+                { name: "Game Leaders", subcategories: [] },
+                { name: "Halves", subcategories: [] },
+                { name: "Quarters", subcategories: [] },
+                { name: "Game Props", subcategories: [] },
+                { name: "Team Props", subcategories: [] }
             ]
         },
         soccer: {
