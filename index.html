@@ -310,6 +310,14 @@
             border-color: #1d9bf0;
         }
 
+        .cards-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            gap: 16px;
+        }
+
         .view-info {
             display: flex;
             align-items: center;
@@ -318,9 +326,36 @@
             background: rgba(29, 155, 240, 0.1);
             border: 1px solid rgba(29, 155, 240, 0.2);
             border-radius: 8px;
-            margin-bottom: 16px;
             font-size: 13px;
             color: #8ecdf8;
+        }
+
+        .group-toggle {
+            display: flex;
+            gap: 4px;
+            background: #16181c;
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .group-btn {
+            padding: 6px 14px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: #71767b;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .group-btn.active {
+            background: #2f3942;
+            color: #e7e9ea;
+        }
+
+        .group-btn:hover:not(.active) {
+            color: #e7e9ea;
         }
 
         .view-info .info-icon {
@@ -418,6 +453,10 @@
 
         .market-item.inactive {
             opacity: 0.5;
+        }
+
+        .market-item.readonly {
+            cursor: default;
         }
 
         .market-name {
@@ -688,7 +727,8 @@
             width: 500px;
             max-width: 90vw;
             max-height: 80vh;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .modal-header {
@@ -697,6 +737,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
 
         .modal-title {
@@ -715,6 +756,8 @@
         .modal-body {
             padding: 24px;
             overflow-y: auto;
+            flex: 1;
+            min-height: 0;
         }
 
         .form-group {
@@ -738,6 +781,7 @@
             display: flex;
             justify-content: flex-end;
             gap: 12px;
+            flex-shrink: 0;
         }
 
         .search-box {

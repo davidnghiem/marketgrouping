@@ -3,6 +3,7 @@ let currentSport = 'football';
 let currentView = 'cards';
 let filteredMarkets = [];
 let editingMarketId = null;
+let cardsGroupBy = 'suggested'; // 'suggested' or 'current'
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
@@ -60,7 +61,6 @@ function updateStats() {
     const totalMarkets = sport.markets.length;
     const activeMarkets = sport.markets.filter(m => m.active).length;
     const inactiveMarkets = totalMarkets - activeMarkets;
-    const categories = [...new Set(sport.markets.map(m => m.suggestedCategory))].length;
 
     const statsBar = document.getElementById('statsBar');
     statsBar.innerHTML = `
@@ -75,10 +75,6 @@ function updateStats() {
         <div class="stat-card">
             <div class="stat-value" style="color: #f4212e">${inactiveMarkets}</div>
             <div class="stat-label">Inactive</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value" style="color: #1d9bf0">${categories}</div>
-            <div class="stat-label">Categories</div>
         </div>
     `;
 }
@@ -168,26 +164,46 @@ function renderContent() {
     }
 }
 
+// Toggle cards grouping mode
+function setCardsGroupBy(mode) {
+    cardsGroupBy = mode;
+    renderContent();
+}
+
 // Render cards view
 function renderCardsView(container) {
     const sport = sportsData[currentSport];
-
-    // Group markets by suggested category
     const groupedMarkets = {};
 
-    // Initialize all suggested categories (even empty ones)
-    sport.suggestedCategories.forEach(cat => {
-        groupedMarkets[cat.name] = [];
-    });
+    if (cardsGroupBy === 'suggested') {
+        // Initialize all suggested categories (even empty ones)
+        sport.suggestedCategories.forEach(cat => {
+            groupedMarkets[cat.name] = [];
+        });
 
-    // Add markets to their categories
-    filteredMarkets.forEach(market => {
-        const category = market.suggestedCategory || 'Uncategorized';
-        if (!groupedMarkets[category]) {
-            groupedMarkets[category] = [];
-        }
-        groupedMarkets[category].push(market);
-    });
+        // Add markets to their categories
+        filteredMarkets.forEach(market => {
+            const category = market.suggestedCategory || 'Uncategorized';
+            if (!groupedMarkets[category]) {
+                groupedMarkets[category] = [];
+            }
+            groupedMarkets[category].push(market);
+        });
+    } else {
+        // Group by current categories (sportsradarType)
+        sport.currentCategories.forEach(cat => {
+            groupedMarkets[cat.name] = [];
+        });
+
+        // Add markets to their current categories
+        filteredMarkets.forEach(market => {
+            const category = market.sportsradarType || 'Uncategorized';
+            if (!groupedMarkets[category]) {
+                groupedMarkets[category] = [];
+            }
+            groupedMarkets[category].push(market);
+        });
+    }
 
     if (Object.keys(groupedMarkets).length === 0) {
         container.innerHTML = `
@@ -200,15 +216,28 @@ function renderCardsView(container) {
         return;
     }
 
+    const isSuggested = cardsGroupBy === 'suggested';
+
+    // Filter out empty categories in current view
+    const displayMarkets = isSuggested
+        ? groupedMarkets
+        : Object.fromEntries(Object.entries(groupedMarkets).filter(([_, markets]) => markets.length > 0));
+
     let html = `
-        <div class="view-info">
-            <span class="info-icon">ℹ️</span>
-            <span>Showing <strong>Suggested Categories</strong> — drag markets between categories to reorganize</span>
+        <div class="cards-header">
+            <div class="view-info">
+                <span class="info-icon">ℹ️</span>
+                <span>Showing <strong>${isSuggested ? 'Suggested' : 'Current'} Categories</strong>${isSuggested ? ' — drag markets between categories to reorganize' : ''}</span>
+            </div>
+            <div class="group-toggle">
+                <button class="group-btn ${isSuggested ? 'active' : ''}" onclick="setCardsGroupBy('suggested')">Suggested</button>
+                <button class="group-btn ${!isSuggested ? 'active' : ''}" onclick="setCardsGroupBy('current')">Current</button>
+            </div>
         </div>
         <div class="categories-container">
     `;
 
-    Object.entries(groupedMarkets).sort().forEach(([category, markets]) => {
+    Object.entries(displayMarkets).sort().forEach(([category, markets]) => {
         html += `
             <div class="category-card" data-category="${category}">
                 <div class="category-header">
@@ -216,31 +245,32 @@ function renderCardsView(container) {
                         ${category}
                         <span class="category-count">${markets.length}</span>
                     </div>
+                    ${isSuggested ? `
                     <div class="category-actions">
                         <button class="icon-btn" onclick="editCategory('${category}')" title="Edit category">✏️</button>
                     </div>
+                    ` : ''}
                 </div>
-                <div class="market-list" ondragover="handleDragOver(event)" ondrop="handleDrop(event, '${category}')">
+                <div class="market-list" ${isSuggested ? `ondragover="handleDragOver(event)" ondrop="handleDrop(event, '${category}')"` : ''}>
         `;
 
         if (markets.length === 0) {
             html += `
                 <div class="empty-category-message">
-                    Drag markets here
+                    ${isSuggested ? 'Drag markets here' : 'No markets'}
                 </div>
             `;
         } else {
             markets.forEach(market => {
+                const subcategory = isSuggested ? market.suggestedSubcategory : '';
                 html += `
-                    <div class="market-item ${market.active ? '' : 'inactive'}"
-                         draggable="true"
+                    <div class="market-item ${market.active ? '' : 'inactive'} ${!isSuggested ? 'readonly' : ''}"
+                         ${isSuggested ? 'draggable="true"' : ''}
                          data-id="${market.id}"
-                         ondragstart="handleDragStart(event)"
-                         ondragend="handleDragEnd(event)"
-                         onclick="openMarketModal('${market.id}')">
+                         ${isSuggested ? `ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)" onclick="openMarketModal('${market.id}')"` : ''}>
                         <span class="market-name">${market.specificMarket}</span>
                         <div class="market-badges">
-                            ${market.suggestedSubcategory ? `<span class="badge badge-subcategory">${market.suggestedSubcategory}</span>` : ''}
+                            ${subcategory ? `<span class="badge badge-subcategory">${subcategory}</span>` : ''}
                             <span class="badge ${market.active ? 'badge-active' : 'badge-inactive'}">
                                 ${market.active ? 'Active' : 'Inactive'}
                             </span>

@@ -3,7 +3,7 @@
 
 const sportsData = {
     football: {
-        name: "American Football",
+        name: "Football",
         icon: "🏈",
         currentCategories: [
             { name: "Main", subcategories: [] },
