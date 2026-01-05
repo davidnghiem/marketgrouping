@@ -106,6 +106,7 @@
         .sidebar.collapsed {
             width: 52px;
             padding: 12px 8px;
+            overflow: visible;
         }
 
         .sidebar-toggle {
@@ -925,9 +926,9 @@
         <main class="main-content">
             <div class="top-bar">
                 <div class="view-toggle">
-                    <button class="view-btn active" data-view="cards" onclick="setView('cards')">📦 Cards</button>
-                    <button class="view-btn" data-view="table" onclick="setView('table')">📋 Table</button>
-                    <button class="view-btn" data-view="comparison" onclick="setView('comparison')">⚖️ Compare</button>
+                    <button class="view-btn active" data-view="cards" onclick="setView('cards')">Cards</button>
+                    <button class="view-btn" data-view="table" onclick="setView('table')">Table</button>
+                    <button class="view-btn" data-view="comparison" onclick="setView('comparison')">Compare</button>
                 </div>
                 <div class="main-actions">
                     <button class="btn btn-secondary" onclick="importData()">Import</button>
