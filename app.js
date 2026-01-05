@@ -1535,21 +1535,22 @@ function closeCategoryDropdown() {
 
 // Export functions
 function exportData() {
+    const sport = getSport();
+
     // Ensure all categories have order set before exporting
-    Object.values(sportsData).forEach(sport => {
-        sport.suggestedCategories.forEach((cat, idx) => {
-            if (cat.order === undefined) cat.order = idx;
-        });
-        // Sort categories by order and re-index
-        sport.suggestedCategories.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
-        sport.suggestedCategories.forEach((cat, idx) => {
-            cat.order = idx;
-        });
+    sport.suggestedCategories.forEach((cat, idx) => {
+        if (cat.order === undefined) cat.order = idx;
+    });
+    // Sort categories by order and re-index
+    sport.suggestedCategories.sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+    sport.suggestedCategories.forEach((cat, idx) => {
+        cat.order = idx;
     });
 
     const exportObj = {
         exportDate: new Date().toISOString(),
-        sports: sportsData
+        sport: currentSport,
+        data: sport
     };
 
     const dataStr = JSON.stringify(exportObj, null, 2);
@@ -1558,7 +1559,7 @@ function exportData() {
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = `market-config-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `${currentSport}-market-config-${new Date().toISOString().split('T')[0]}.json`;
     a.click();
 
     URL.revokeObjectURL(url);
@@ -1629,13 +1630,33 @@ function importData() {
         reader.onload = (event) => {
             try {
                 const imported = JSON.parse(event.target.result);
-                if (imported.sports) {
+
+                // New single-sport format
+                if (imported.sport && imported.data) {
+                    const sportName = imported.sport;
+                    if (sportsData[sportName]) {
+                        sportsData[sportName] = imported.data;
+                        // Switch to the imported sport
+                        currentSport = sportName;
+                        initializeSportList();
+                        updateStats();
+                        updateCategoryFilter();
+                        renderContent();
+                        alert(`${sportName.charAt(0).toUpperCase() + sportName.slice(1)} data imported successfully!`);
+                    } else {
+                        alert(`Unknown sport: ${sportName}`);
+                    }
+                }
+                // Legacy multi-sport format
+                else if (imported.sports) {
                     Object.assign(sportsData, imported.sports);
                     initializeSportList();
                     updateStats();
                     updateCategoryFilter();
                     renderContent();
                     alert('Data imported successfully!');
+                } else {
+                    alert('Invalid file format. Expected sport configuration JSON.');
                 }
             } catch (err) {
                 alert('Error importing file: ' + err.message);
