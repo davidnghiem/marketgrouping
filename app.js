@@ -650,6 +650,9 @@ function renderComparisonView(container) {
         });
     });
 
+    // Generate dynamic Key Differences
+    const keyDifferences = generateKeyDifferences(sport, currentSport);
+
     html += `
                 </div>
             </div>
@@ -660,11 +663,7 @@ function renderComparisonView(container) {
                 <div class="market-list" style="padding: 20px">
                     <p style="margin-bottom: 12px; color: #e7e9ea">Recommendations:</p>
                     <ul style="color: #71767b; line-height: 1.8; padding-left: 20px">
-                        <li>Separate Player Props into stat-specific categories (Passing, Rushing, etc.)</li>
-                        <li>Add a "Popular" category for featured markets</li>
-                        <li>Create "Game Props" distinct from Player Props</li>
-                        <li>Consider "Team Props" for team-specific totals</li>
-                        <li>Use consistent naming across sports</li>
+                        ${keyDifferences.map(diff => `<li>${diff}</li>`).join('')}
                     </ul>
                 </div>
             </div>
@@ -672,6 +671,140 @@ function renderComparisonView(container) {
     `;
 
     container.innerHTML = html;
+}
+
+// Generate sport-specific key differences between current and suggested categories
+function generateKeyDifferences(sport, sportKey) {
+    const currentNames = sport.currentCategories.map(c => c.name);
+    const suggestedNames = sport.suggestedCategories.map(c => c.name);
+
+    const differences = [];
+
+    // Check for new categories in suggested that aren't in current
+    const newCategories = suggestedNames.filter(name =>
+        !currentNames.some(curr => curr.toLowerCase() === name.toLowerCase())
+    );
+
+    // Check for removed categories from current that aren't in suggested
+    const removedCategories = currentNames.filter(name =>
+        !suggestedNames.some(sugg => sugg.toLowerCase() === name.toLowerCase()) &&
+        !['More', 'All', 'Main'].includes(name)
+    );
+
+    // Sport-specific recommendations
+    switch(sportKey) {
+        case 'football':
+            if (newCategories.includes('Popular')) {
+                differences.push('Add "Popular" category for featured/high-volume markets');
+            }
+            if (newCategories.includes('Game Lines')) {
+                differences.push('Rename "Main" to "Game Lines" to match DraftKings naming');
+            }
+            if (newCategories.includes('Game Props')) {
+                differences.push('Create "Game Props" category for game-level props (OT, Total TDs, etc.)');
+            }
+            if (newCategories.includes('Special Teams')) {
+                differences.push('Add "Special Teams" for field goal and kicking markets');
+            }
+            differences.push('Keep Player Props but organize with subcategories: Passing, Rushing, Receiving, TD Props');
+            differences.push('DraftKings separates TD Scorers as a top-level category - consider same approach');
+            break;
+
+        case 'basketball':
+            if (newCategories.includes('Popular')) {
+                differences.push('Add "Popular" category for featured markets');
+            }
+            if (newCategories.includes('Game Lines')) {
+                differences.push('Rename "Main" to "Game Lines" to align with DraftKings');
+            }
+            if (newCategories.includes('Game Props')) {
+                differences.push('Create "Game Props" for game-level props (Overtime, Winner & Total, etc.)');
+            }
+            if (newCategories.includes('Points')) {
+                differences.push('Add "Points" category for team totals and scoring props');
+            }
+            differences.push('DraftKings splits Player Props into separate categories (Points, Threes, Rebounds, Assists, Combos, Defense) - consider similar granularity');
+            differences.push('Add "Quick Hits" category for popular quick-bet markets');
+            break;
+
+        case 'soccer':
+            if (newCategories.includes('Popular')) {
+                differences.push('Add "Popular" category for featured markets');
+            }
+            if (newCategories.includes('Match Lines')) {
+                differences.push('Rename "Main" to "Match Lines" to match industry standard');
+            }
+            if (newCategories.includes('Goalscorers')) {
+                differences.push('Create dedicated "Goalscorers" category for 1st/Anytime/Last scorer markets');
+            }
+            if (newCategories.includes('Goals')) {
+                differences.push('Add "Goals" category for BTTS, totals, clean sheets, etc.');
+            }
+            if (newCategories.includes('Corners')) {
+                differences.push('Add "Corners" as a top-level category (high-volume market)');
+            }
+            differences.push('DraftKings has "Cards" as separate category - consider adding for booking markets');
+            differences.push('Consider "Team Props" for team-specific markets');
+            break;
+
+        case 'hockey':
+            if (newCategories.includes('Popular')) {
+                differences.push('Add "Popular" category for featured markets');
+            }
+            if (newCategories.includes('Game Lines')) {
+                differences.push('Rename "Main" to "Game Lines" to match DraftKings');
+            }
+            if (newCategories.includes('Goals')) {
+                differences.push('Add "Goals" category for goal-related props');
+            }
+            if (newCategories.includes('Periods')) {
+                differences.push('Rename "Period" to "Periods" for consistency');
+            }
+            if (newCategories.includes('Game Props')) {
+                differences.push('Add "Game Props" for overtime and special props');
+            }
+            differences.push('DraftKings splits player props into Goalscorer, Shots On Goal, Points, Assists, Blocks - consider similar approach');
+            differences.push('Add "Goalie Props" as separate category per DraftKings');
+            break;
+
+        case 'tennis':
+            if (newCategories.includes('Popular')) {
+                differences.push('Add "Popular" category for featured markets');
+            }
+            if (newCategories.includes('Match Lines')) {
+                differences.push('Rename "Main" to "Match Lines" for consistency');
+            }
+            if (newCategories.includes('Game Props')) {
+                differences.push('Add "Game Props" for tiebreaks and special markets');
+            }
+            differences.push('DraftKings has "Tie Break" as dedicated category - consider adding');
+            differences.push('DraftKings uses "Players" category - consider for player-specific markets');
+            break;
+
+        case 'baseball':
+            if (newCategories.includes('Popular')) {
+                differences.push('Add "Popular" category for featured markets');
+            }
+            if (newCategories.includes('Game Lines')) {
+                differences.push('Rename "Main" to "Game Lines" for consistency');
+            }
+            if (newCategories.includes('Game Props')) {
+                differences.push('Consolidate "Specials" into "Game Props" category');
+            }
+            differences.push('Organize Player Props with subcategories: Batter Props, Pitcher Props');
+            differences.push('Keep "Runs" as dedicated category for run-related markets');
+            break;
+    }
+
+    // Generic recommendations if we don't have enough sport-specific ones
+    if (differences.length < 3) {
+        if (!differences.some(d => d.includes('Popular'))) {
+            differences.push('Add "Popular" category to highlight high-volume markets');
+        }
+        differences.push('Use consistent naming conventions across all sports');
+    }
+
+    return differences;
 }
 
 // Get current category for a market
