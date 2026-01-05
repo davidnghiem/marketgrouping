@@ -713,10 +713,19 @@ const competitorData = {
             categories: [
                 { name: "Popular", subcategories: [] },
                 { name: "Game Lines", subcategories: [] },
-                { name: "Goal Props", subcategories: ["Total Goals", "Team Goals", "Period Goals"] },
-                { name: "Player Props", subcategories: ["Goals", "Assists", "Points", "Shots"] },
-                { name: "Period Lines", subcategories: ["1st Period", "2nd Period", "3rd Period"] },
-                { name: "Game Props", subcategories: [] }
+                { name: "Quick Hits", subcategories: [] },
+                { name: "Goalscorer", subcategories: [] },
+                { name: "Shots On Goal", subcategories: [] },
+                { name: "Points", subcategories: [] },
+                { name: "Assists", subcategories: [] },
+                { name: "Blocks", subcategories: [] },
+                { name: "Goalie Props", subcategories: [] },
+                { name: "Game Leaders", subcategories: [] },
+                { name: "Periods", subcategories: [] },
+                { name: "Team Totals", subcategories: [] },
+                { name: "Game Props", subcategories: [] },
+                { name: "Game Props (60 Min)", subcategories: [] },
+                { name: "Game Parlays", subcategories: [] }
             ]
         },
         tennis: {
