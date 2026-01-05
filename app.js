@@ -5,6 +5,59 @@ let filteredMarkets = [];
 let editingMarketId = null;
 let cardsGroupBy = 'suggested'; // 'suggested' or 'current'
 
+// Constants
+const VIEW_MODES = {
+    CARDS: 'cards',
+    TABLE: 'table',
+    COMPARISON: 'comparison'
+};
+
+const GROUP_BY = {
+    SUGGESTED: 'suggested',
+    CURRENT: 'current'
+};
+
+// Helper Functions
+function getMarketById(marketId) {
+    const sport = sportsData[currentSport];
+    return sport.markets.find(m => m.id === marketId);
+}
+
+function getCategoryConfig(categoryName) {
+    const sport = sportsData[currentSport];
+    return sport.suggestedCategories.find(c => c.name === categoryName);
+}
+
+function getUniqueCategoryValues(markets, field) {
+    return [...new Set(markets.map(m => m[field]))].filter(Boolean).sort();
+}
+
+function getFilterCriteria() {
+    return {
+        searchTerm: document.getElementById('searchInput').value.toLowerCase(),
+        statusFilter: document.getElementById('statusFilter').value,
+        categoryFilter: document.getElementById('categoryFilter').value
+    };
+}
+
+function applyFilters(markets, criteria) {
+    return markets.filter(market => {
+        const matchesSearch = !criteria.searchTerm ||
+            market.specificMarket.toLowerCase().includes(criteria.searchTerm) ||
+            market.sportsradarType.toLowerCase().includes(criteria.searchTerm) ||
+            market.suggestedCategory.toLowerCase().includes(criteria.searchTerm);
+
+        const matchesStatus = criteria.statusFilter === 'all' ||
+            (criteria.statusFilter === 'active' && market.active) ||
+            (criteria.statusFilter === 'inactive' && !market.active);
+
+        const matchesCategory = criteria.categoryFilter === 'all' ||
+            market.suggestedCategory === criteria.categoryFilter;
+
+        return matchesSearch && matchesStatus && matchesCategory;
+    });
+}
+
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
     initializeSportList();
@@ -82,15 +135,14 @@ function updateStats() {
 // Update category filter dropdown
 function updateCategoryFilter() {
     const sport = sportsData[currentSport];
-    const categories = [...new Set(sport.markets.map(m => m.suggestedCategory))].sort();
+    const categories = getUniqueCategoryValues(sport.markets, 'suggestedCategory');
 
     const categoryFilter = document.getElementById('categoryFilter');
-    categoryFilter.innerHTML = '<option value="all">All Categories</option>';
-    categories.forEach(cat => {
-        if (cat) {
-            categoryFilter.innerHTML += `<option value="${cat}">${cat}</option>`;
-        }
-    });
+    const options = [
+        '<option value="all">All Categories</option>',
+        ...categories.map(cat => `<option value="${cat}">${cat}</option>`)
+    ];
+    categoryFilter.innerHTML = options.join('');
 }
 
 // Set view mode
@@ -105,24 +157,8 @@ function setView(view) {
 // Filter markets based on search and filters
 function filterMarkets() {
     const sport = sportsData[currentSport];
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const statusFilter = document.getElementById('statusFilter').value;
-    const categoryFilter = document.getElementById('categoryFilter').value;
-
-    filteredMarkets = sport.markets.filter(market => {
-        const matchesSearch = market.specificMarket.toLowerCase().includes(searchTerm) ||
-                            market.sportsradarType.toLowerCase().includes(searchTerm) ||
-                            market.suggestedCategory.toLowerCase().includes(searchTerm);
-
-        const matchesStatus = statusFilter === 'all' ||
-                            (statusFilter === 'active' && market.active) ||
-                            (statusFilter === 'inactive' && !market.active);
-
-        const matchesCategory = categoryFilter === 'all' || market.suggestedCategory === categoryFilter;
-
-        return matchesSearch && matchesStatus && matchesCategory;
-    });
-
+    const criteria = getFilterCriteria();
+    filteredMarkets = applyFilters(sport.markets, criteria);
     renderContent();
 }
 
@@ -132,33 +168,17 @@ function renderContent() {
     const sport = sportsData[currentSport];
 
     // Apply filters
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    const statusFilter = document.getElementById('statusFilter').value;
-    const categoryFilter = document.getElementById('categoryFilter').value;
-
-    filteredMarkets = sport.markets.filter(market => {
-        const matchesSearch = !searchTerm ||
-                            market.specificMarket.toLowerCase().includes(searchTerm) ||
-                            market.sportsradarType.toLowerCase().includes(searchTerm) ||
-                            market.suggestedCategory.toLowerCase().includes(searchTerm);
-
-        const matchesStatus = statusFilter === 'all' ||
-                            (statusFilter === 'active' && market.active) ||
-                            (statusFilter === 'inactive' && !market.active);
-
-        const matchesCategory = categoryFilter === 'all' || market.suggestedCategory === categoryFilter;
-
-        return matchesSearch && matchesStatus && matchesCategory;
-    });
+    const criteria = getFilterCriteria();
+    filteredMarkets = applyFilters(sport.markets, criteria);
 
     switch (currentView) {
-        case 'cards':
+        case VIEW_MODES.CARDS:
             renderCardsView(contentArea);
             break;
-        case 'table':
+        case VIEW_MODES.TABLE:
             renderTableView(contentArea);
             break;
-        case 'comparison':
+        case VIEW_MODES.COMPARISON:
             renderComparisonView(contentArea);
             break;
     }
@@ -446,11 +466,11 @@ function renderComparisonView(container) {
     const sport = sportsData[currentSport];
     const competitor = competitorData.draftkings[currentSport];
 
-    html = `
+    let html = `
         <div class="comparison-view">
             <div class="comparison-panel">
                 <div class="comparison-header current">
-                    Your Current Categories
+                    Current Categories
                 </div>
                 <div class="market-list">
     `;
@@ -510,7 +530,7 @@ function renderComparisonView(container) {
             </div>
         </div>
 
-        <h3 style="margin: 30px 0 20px; color: #71767b">Suggested Categories Based on Competitor Analysis</h3>
+        <h3 style="margin: 30px 0 20px; color: #71767b">Suggested Categories</h3>
 
         <div class="comparison-view">
             <div class="comparison-panel">
@@ -522,14 +542,14 @@ function renderComparisonView(container) {
 
     sport.suggestedCategories.forEach(cat => {
         html += `
-            <div class="market-item">
+            <div class="market-item" style="cursor: pointer" onclick="editCategory('${cat.name}')">
                 <span class="market-name">${cat.name}</span>
                 ${cat.subcategories.length > 0 ? `<span class="badge badge-subcategory">${cat.subcategories.length} subcats</span>` : ''}
             </div>
         `;
         cat.subcategories.forEach(sub => {
             html += `
-                <div class="market-item" style="padding-left: 30px; opacity: 0.7">
+                <div class="market-item" style="padding-left: 30px; opacity: 0.7; cursor: pointer" onclick="editSubcategory('${cat.name}', '${sub}')">
                     <span class="market-name">↳ ${sub}</span>
                 </div>
             `;
@@ -603,8 +623,7 @@ function handleDrop(event, category) {
 
 // Toggle market active status
 function toggleMarketActive(marketId) {
-    const sport = sportsData[currentSport];
-    const market = sport.markets.find(m => m.id === marketId);
+    const market = getMarketById(marketId);
     if (market) {
         market.active = !market.active;
         updateStats();
@@ -666,7 +685,7 @@ function saveCategory() {
 function openMarketModal(marketId) {
     editingMarketId = marketId;
     const sport = sportsData[currentSport];
-    const market = sport.markets.find(m => m.id === marketId);
+    const market = getMarketById(marketId);
 
     if (!market) return;
 
@@ -677,7 +696,7 @@ function openMarketModal(marketId) {
 
     // Populate category dropdown
     const categorySelect = document.getElementById('marketCategory');
-    const categories = [...new Set(sport.markets.map(m => m.suggestedCategory))].filter(c => c).sort();
+    const categories = getUniqueCategoryValues(sport.markets, 'suggestedCategory');
     categorySelect.innerHTML = categories.map(cat =>
         `<option value="${cat}" ${cat === market.suggestedCategory ? 'selected' : ''}>${cat}</option>`
     ).join('');
@@ -689,17 +708,17 @@ function openMarketModal(marketId) {
 }
 
 function updateSubcategoryDropdown(category, selectedSubcategory = '') {
-    const sport = sportsData[currentSport];
     const subcategorySelect = document.getElementById('marketSubcategory');
-
-    // Get subcategories from suggested categories
-    const catConfig = sport.suggestedCategories.find(c => c.name === category);
+    const catConfig = getCategoryConfig(category);
     const subcategories = catConfig ? catConfig.subcategories : [];
 
-    subcategorySelect.innerHTML = '<option value="">None</option>';
-    subcategories.forEach(sub => {
-        subcategorySelect.innerHTML += `<option value="${sub}" ${sub === selectedSubcategory ? 'selected' : ''}>${sub}</option>`;
-    });
+    const options = [
+        '<option value="">None</option>',
+        ...subcategories.map(sub =>
+            `<option value="${sub}" ${sub === selectedSubcategory ? 'selected' : ''}>${sub}</option>`
+        )
+    ];
+    subcategorySelect.innerHTML = options.join('');
 }
 
 function closeMarketModal() {
@@ -741,6 +760,31 @@ function editCategory(category) {
         }
 
         updateCategoryFilter();
+        renderContent();
+    }
+}
+
+function editSubcategory(categoryName, subcategory) {
+    const newName = prompt('Enter new subcategory name:', subcategory);
+    if (newName && newName !== subcategory) {
+        const sport = sportsData[currentSport];
+
+        // Update markets with this subcategory
+        sport.markets.forEach(market => {
+            if (market.suggestedCategory === categoryName && market.suggestedSubcategory === subcategory) {
+                market.suggestedSubcategory = newName;
+            }
+        });
+
+        // Update suggested categories config
+        const catConfig = sport.suggestedCategories.find(c => c.name === categoryName);
+        if (catConfig) {
+            const subIndex = catConfig.subcategories.indexOf(subcategory);
+            if (subIndex !== -1) {
+                catConfig.subcategories[subIndex] = newName;
+            }
+        }
+
         renderContent();
     }
 }
