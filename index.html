@@ -93,6 +93,50 @@
             align-items: center;
         }
 
+        /* Info Wrapper - shared base styles */
+        .info-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-icon {
+            cursor: help;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .info-icon:hover {
+            opacity: 1;
+        }
+
+        /* Tooltip - shared base styles */
+        .tooltip-base {
+            display: none;
+            position: absolute;
+            top: 100%;
+            margin-top: 8px;
+            background: #1e2732;
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            width: 280px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--color-text-muted);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        .tooltip-base strong {
+            color: var(--color-text);
+        }
+
+        .info-wrapper:hover .tooltip-base {
+            display: block;
+        }
+
+        /* Storage info specific */
         .storage-info-wrapper {
             position: relative;
             display: flex;
@@ -111,71 +155,36 @@
         }
 
         .storage-info-tooltip {
-            display: none;
-            position: absolute;
-            top: 100%;
             right: 0;
-            margin-top: 8px;
-            background: #1e2732;
-            border: 1px solid var(--color-border);
-            border-radius: 8px;
-            padding: 12px 16px;
-            width: 280px;
-            font-size: 13px;
-            line-height: 1.5;
-            color: var(--color-text-secondary);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-        }
-
-        .storage-info-tooltip strong {
-            color: var(--color-text);
         }
 
         .storage-info-wrapper:hover .storage-info-tooltip {
             display: block;
         }
 
+        /* Name info specific */
         .name-info-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
             margin-left: 4px;
         }
 
         .name-info-icon {
-            cursor: help;
             font-size: 14px;
-            opacity: 0.7;
-            transition: opacity 0.2s;
-        }
-
-        .name-info-icon:hover {
-            opacity: 1;
         }
 
         .name-info-tooltip {
-            display: none;
-            position: absolute;
-            top: 100%;
             left: 50%;
             transform: translateX(-50%);
-            margin-top: 8px;
-            background: #1e2732;
-            border: 1px solid var(--color-border);
-            border-radius: 8px;
-            padding: 12px 16px;
-            width: 280px;
-            font-size: 13px;
-            line-height: 1.5;
-            color: var(--color-text-muted);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
         }
 
         .name-info-wrapper:hover .name-info-tooltip {
             display: block;
         }
+
+        /* Utility classes */
+        .text-muted { color: var(--color-text-muted); }
+        .font-normal { font-weight: normal; }
+        .opacity-70 { opacity: 0.7; }
+        .pl-30 { padding-left: 30px; }
 
         .btn {
             padding: var(--spacing-sm) var(--spacing-lg);
@@ -1315,9 +1324,9 @@
                     <button class="btn btn-secondary" onclick="importData()">Import</button>
                     <button class="btn btn-primary" onclick="exportData()">Export JSON</button>
                     <button class="btn btn-success" onclick="exportCSV()">Export CSV</button>
-                    <div class="storage-info-wrapper">
-                        <span class="storage-info-icon" title="">ℹ️</span>
-                        <div class="storage-info-tooltip">
+                    <div class="storage-info-wrapper info-wrapper">
+                        <span class="storage-info-icon info-icon" title="">ℹ️</span>
+                        <div class="storage-info-tooltip tooltip-base">
                             <strong>How saving works:</strong><br>
                             Changes are temporary and stored in memory only. If you reload the page, all changes will reset to defaults.<br><br>
                             <strong>To save your work:</strong><br>
@@ -1353,9 +1362,9 @@
                 <div class="filter-group">
                     <span class="filter-label">Names:</span>
                     <button class="btn btn-toggle" id="nameDisplayToggle" onclick="toggleNameDisplay()">Custom Names</button>
-                    <div class="name-info-wrapper">
-                        <span class="name-info-icon">ℹ️</span>
-                        <div class="name-info-tooltip">
+                    <div class="name-info-wrapper info-wrapper">
+                        <span class="name-info-icon info-icon">ℹ️</span>
+                        <div class="name-info-tooltip tooltip-base">
                             <strong style="color: #f59e0b;">Orange market names</strong> indicate the display name has been changed from the original Sportsradar name.<br><br>
                             Hover over orange names to see the original name. Click "Edit Market" to modify the display name.
                         </div>
