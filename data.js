@@ -663,13 +663,18 @@ const competitorData = {
             categories: [
                 { name: "Popular", subcategories: [] },
                 { name: "Game Lines", subcategories: [] },
-                { name: "Passing Props", subcategories: ["Pass Yards", "Pass TDs", "Pass Attempts", "Completions", "Interceptions"] },
-                { name: "Rushing Props", subcategories: ["Rush Yards", "Rush TDs", "Rush Attempts"] },
-                { name: "Receiving Props", subcategories: ["Receptions", "Receiving Yards", "Receiving TDs"] },
-                { name: "TD Props", subcategories: ["Anytime TD", "First TD", "Last TD"] },
-                { name: "Game Props", subcategories: [] },
+                { name: "TD Scorers", subcategories: [] },
+                { name: "Passing Props", subcategories: [] },
+                { name: "Receiving Props", subcategories: [] },
+                { name: "Rushing Props", subcategories: [] },
+                { name: "1st Quarter Props", subcategories: [] },
+                { name: "Game Specials", subcategories: [] },
+                { name: "1st Drive", subcategories: [] },
+                { name: "1st of Game", subcategories: [] },
+                { name: "Halves", subcategories: [] },
+                { name: "Quarters", subcategories: [] },
                 { name: "Team Props", subcategories: [] },
-                { name: "Stat Leaders", subcategories: [] }
+                { name: "Squares", subcategories: [] }
             ]
         },
         basketball: {
