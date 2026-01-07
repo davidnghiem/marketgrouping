@@ -322,6 +322,12 @@ function renderCardsView(container) {
                     if (subB === 'TD Props' && subA !== 'TD Props') return 1;
                 }
 
+                // Special case: Hockey Player Props - Goalscorer comes first
+                if (currentSport === 'hockey' && category === 'Player Props') {
+                    if (subA === 'Goalscorer' && subB !== 'Goalscorer') return -1;
+                    if (subB === 'Goalscorer' && subA !== 'Goalscorer') return 1;
+                }
+
                 // Special case: Football Halves - Halftime/Fulltime first, Highest Scoring Half second
                 if (currentSport === 'football' && category === 'Halves') {
                     const isHalftimeA = nameA === 'Halftime/Fulltime';
